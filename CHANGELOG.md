@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Editor**: Support for more file formats like go, md/markdown, mts, mjs and fsx/fsharp.
+
 ## [25.12.4] - 2025-12-15
 
 ### Added
