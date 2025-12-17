@@ -433,8 +433,11 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
                     <option value="cpp">C++</option>
                     <option value="csharp">C#</option>
                     <option value="sql">SQL</option>
+                    <option value="go">Golang</option>
+                    <option value="fsharp">F#</option>
                     <option value="shell">Shell</option>
                     <option value="bat">Batch</option>
+                    <option value="markdown">Markdown</option>
                     <option value="plaintext">Plain Text</option>
                   </select>
                 </div>

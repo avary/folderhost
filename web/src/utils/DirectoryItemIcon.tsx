@@ -13,7 +13,8 @@ import {
   FaFileWord,
   FaFileExcel,
   FaFilePowerpoint,
-  FaFolderOpen
+  FaFolderOpen,
+  FaMarkdown
 } from "react-icons/fa";
 import { FaGear } from "react-icons/fa6";
 import { IoLogoJavascript } from "react-icons/io";
@@ -21,9 +22,10 @@ import { BiMoviePlay } from "react-icons/bi";
 import { TbBrandCSharp, TbBrandPowershell } from "react-icons/tb";
 import { VscJson } from "react-icons/vsc";
 import { LuCodeXml } from "react-icons/lu";
-import { RiPhpFill, RiPhpLine } from "react-icons/ri";
+import { RiPhpFill } from "react-icons/ri";
 import { GrDocumentConfig } from "react-icons/gr";
 import type { DirectoryItem } from "../types/DirectoryItem";
+import { FaGolang } from "react-icons/fa6";
 
 interface DirectoryItemIconProps {
   logoSize: number;
@@ -39,6 +41,7 @@ export const DirectoryItemIcon: React.FC<DirectoryItemIconProps> = ({ logoSize, 
     archive: <FaFileArchive size={logoSize} className='mx-2' />,
     html: <FaHtml5 size={logoSize} className='mx-2' />,
     css: <FaCss3 size={logoSize} className='mx-2' />,
+    golang: <FaGolang size={logoSize} className='mx-2' />,
     audio: <FaMusic size={logoSize} className='mx-2' />,
     video: <BiMoviePlay size={logoSize} className='mx-2' />,
     java: <FaJava size={logoSize} className='mx-2' />,
@@ -55,6 +58,7 @@ export const DirectoryItemIcon: React.FC<DirectoryItemIconProps> = ({ logoSize, 
     php: <RiPhpFill size={logoSize + 5} className="mx-2" />,
     shell: <TbBrandPowershell size={logoSize} className="mx-2" />,
     config: <GrDocumentConfig size={logoSize} className="mx-2" />,
+    markdown: <FaMarkdown size={logoSize} className="mx-2" />,
     default: <FaFileAlt size={logoSize} className='mx-2' />
   };
 
@@ -84,7 +88,9 @@ export const DirectoryItemIcon: React.FC<DirectoryItemIconProps> = ({ logoSize, 
     js: 'javascript',
     ts: 'javascript',
     tsx: 'javascript',
+    mts: 'javascript',
     jsx: 'javascript',
+    mjs: 'javascript',
     cs: 'csharp',
     exe: 'exe',
     db: 'database',
@@ -117,7 +123,9 @@ export const DirectoryItemIcon: React.FC<DirectoryItemIconProps> = ({ logoSize, 
     ini: 'config',
     yml: 'config',
     yaml: 'config',
-    py: 'python'
+    py: 'python',
+    md: 'markdown',
+    go: 'golang'
   };
 
 

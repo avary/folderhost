@@ -87,6 +87,10 @@ const CodeEditorPage = () => {
             "js": "javascript",
             "json": "json",
             "ts": "typescript",
+            "mts": "typescript",
+            "mjs": "javascript",
+            "go": "go",
+            "fsx": "fsharp",
             "html": "html",
             "css": "css",
             "php": "php",
@@ -99,7 +103,8 @@ const CodeEditorPage = () => {
             "c": "c",
             "cpp": "cpp",
             "sql": "sql",
-            "xml": "xml"
+            "xml": "xml",
+            "md": "markdown"
         };
 
         if (!path) {
