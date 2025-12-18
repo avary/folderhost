@@ -37,7 +37,9 @@ const ChangeMode = () => {
     }) => {
         setSelectedOption(option.title);
         setIsOpen(false);
-        Cookies.set("mode", option.title);
+        Cookies.set("mode", option.title, {
+            expires: 7
+        });
     };
 
     const handleOutsideClick = (event: MouseEvent) => {
@@ -58,7 +60,9 @@ const ChangeMode = () => {
             setSelectedOption(Cookies.get("mode") ?? "Optimized mode")
         } else {
             setSelectedOption(options[0]?.title ?? "Optimized mode")
-            Cookies.set("mode", selectedOption)
+            Cookies.set("mode", selectedOption, {
+                expires: 7
+            })
         }
     }, [])
 

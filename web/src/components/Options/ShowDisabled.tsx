@@ -40,9 +40,13 @@ const ShowDisabled: React.FC<ShowDisabledProps> = ({ setShowDisabled }) => {
         description: string;
     }) => {
         if (option.mode === "show") {
-            Cookies.set("show-disabled", "true");
+            Cookies.set("show-disabled", "true", {
+                expires: 7
+            });
         } else {
-            Cookies.set("show-disabled", "false");
+            Cookies.set("show-disabled", "false", {
+                expires: 7
+            });
         }
         setSelectedOption(option.title);
         setIsOpen(false);
@@ -73,7 +77,9 @@ const ShowDisabled: React.FC<ShowDisabledProps> = ({ setShowDisabled }) => {
             }
         } else {
             setSelectedOption(options[1]?.title ?? "Hide disabled")
-            Cookies.set("show-disabled", "false")
+            Cookies.set("show-disabled", "false", {
+                expires: 7
+            })
         }
 
     }, [])

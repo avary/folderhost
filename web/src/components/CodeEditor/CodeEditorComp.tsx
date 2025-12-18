@@ -69,7 +69,7 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
           endLineNumber: position.lineNumber,
           endColumn: position.column,
         });
-        
+
         const word = model.getWordUntilPosition(position);
         const range = {
           startLineNumber: position.lineNumber,
@@ -77,24 +77,24 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
           startColumn: word.startColumn,
           endColumn: word.endColumn,
         };
-        
+
         const scriptOpen = /<script[^>]*>/gi;
         const scriptClose = /<\/script>/gi;
-        
+
         let match;
         let lastOpenIndex = -1;
         let lastCloseIndex = -1;
-        
+
         while (match = scriptOpen.exec(textBeforePosition)) {
           lastOpenIndex = match.index;
         }
-        
+
         while (match = scriptClose.exec(textBeforePosition)) {
           lastCloseIndex = match.index;
         }
-        
+
         const inScriptTag = lastOpenIndex > lastCloseIndex;
-        
+
         let suggestions = htmlSnippets(monacoInstance).map(snippet => ({
           ...snippet,
           range,
@@ -107,7 +107,7 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
           }));
           return { suggestions: suggestions };
         }
-        
+
         return { suggestions: suggestions };
       }
     });
@@ -249,7 +249,7 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
             const model = editor.getModel();
 
             if (!model) return;
-            
+
             isRemoteChangeRef.current = true;
 
             model.applyEdits([{
@@ -457,7 +457,9 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
                       onChange={(e) => {
                         const value = parseInt(e.target.value, 10);
                         setEditorFontSize(value);
-                        Cookies.set("editor-fontsize", value.toString());
+                        Cookies.set("editor-fontsize", value.toString(), {
+                          expires: 7
+                        });
                       }}
                       className="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
                     />
@@ -477,7 +479,9 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
                     <button
                       onClick={() => {
                         setMinimap(true);
-                        Cookies.set("editor-minimap", "true");
+                        Cookies.set("editor-minimap", "true", {
+                          expires: 7
+                        });
                       }}
                       className={`flex-1 px-3 py-2 rounded-lg transition-colors ${minimap
                         ? 'bg-blue-500 text-white'
@@ -489,7 +493,9 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
                     <button
                       onClick={() => {
                         setMinimap(false);
-                        Cookies.set("editor-minimap", "false");
+                        Cookies.set("editor-minimap", "false", {
+                          expires: 7
+                        });
                       }}
                       className={`flex-1 px-3 py-2 rounded-lg transition-colors ${!minimap
                         ? 'bg-red-500 text-white'
