@@ -25,7 +25,7 @@ import { DirectoryItemIcon } from '../../utils/DirectoryItemIcon';
 const FileExplorer: React.FC = () => {
   const [draggedItem, setDraggedItem] = useState<DirectoryItem | null>();
   const [dropTarget, setDropTarget] = useState<string>("");
-  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'name', direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
   const childElements = useRef<Array<HTMLDivElement>>([]);
   const previousDirRef = useRef<HTMLButtonElement | null>(null);
   const [selectedChildEl, setSelectedChildEl] = useState<number | null>(null);
@@ -34,12 +34,7 @@ const FileExplorer: React.FC = () => {
     path, directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, readDir, getParent, setShowCreateItemMenu, downloading, permissions, unzipping, waitingResponse, contextMenu, deleteItem, setContextMenu, scrollIndex, isDirLoading: isLoading
   } = useContext<ExplorerContextType>(ExplorerContext)
 
-  const handleSort = (key: string) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-
+  const updateSort = useCallback((key: string, direction: string ) => {
     let sortedItems = [...directory ?? []];
 
     switch (key) {
@@ -66,16 +61,26 @@ const FileExplorer: React.FC = () => {
         break;
     }
 
-    setSortConfig({ key, direction });
     setDirectory(sortedItems.map((file, index) => ({ ...file, id: index })));
-  };
+  }, [directory])
 
-  const getSortIcon = (key: string) => {
+  const handleSort = useCallback((key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+
+    updateSort(key, direction)
+    
+    setSortConfig({ key, direction });
+  }, [sortConfig, updateSort]);
+
+  const getSortIcon = useCallback((key: string) => {
     if (sortConfig.key !== key) return <FaSort className="text-gray-400" />;
     return sortConfig.direction === 'asc'
       ? <FaSortUp className="text-blue-400" />
       : <FaSortDown className="text-blue-400" />;
-  };
+  }, [sortConfig]);
 
   function handleContextMenu(event: React.MouseEvent<HTMLDivElement, MouseEvent>, element: DirectoryItem | null) {
     event.preventDefault()
@@ -97,6 +102,12 @@ const FileExplorer: React.FC = () => {
       directoryRef.current.scrollTop = scrollIndex.current;
     }
   }, [directory])
+
+  useLayoutEffect(() => {
+    if (!isLoading) {
+      updateSort(sortConfig.key, sortConfig.direction)
+    }
+  }, [isLoading])
 
   const handleDeleteKeyDown = useCallback((event: KeyboardEvent) => {
     if (event.key !== 'Delete' || itemInfo?.id == -1 || !permissions?.delete) {
