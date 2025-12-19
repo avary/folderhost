@@ -2,11 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [25.12.5] - 2025-12-19
 
 ### Added
 
-- **Editor**: Support for more file formats like go, md/markdown, mts, mjs and fsx/fsharp.
+- **Code Editor**: Added syntax highlighting support for new file formats:
+  - Go (`.go`)
+  - Markdown (`.md`, `.markdown`) 
+  - JavaScript modules (`.mjs`, `.mts`)
+  - F# scripts (`.fsx`, `.fsharp`)
+
+### Fixed
+
+- **File order**: Fixed inconsistent file sorting that ignored user settings.
+
+### Changed
+
+- **User Preferences**: Implemented cookie-based persistence for user settings
+  - Settings like "Show folder size" now persist across browser sessions
+  - Cookies auto-renew on each visit (7-day expiry)
+  - Preferences only reset if user doesn't visit for a week
+- **File order**: The default setting for file ordering is changed. The ordering now starts with the most recently modified element and goes to the oldest.
+
+### Removed
+
+- Unused UI components in OptionsBar directory.
+
 
 ## [25.12.4] - 2025-12-15
 
