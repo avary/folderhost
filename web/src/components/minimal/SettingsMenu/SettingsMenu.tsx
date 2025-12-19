@@ -16,7 +16,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, setIsOpen }) => {
     const [folderSizeMode, setFolderSizeMode] = useState(Cookies.get("mode") == "Quality mode" ? true : false)
 
     useEffect(() => {
-        Cookies.set("mode", folderSizeMode ? "Quality mode" : "Optimized mode")
+        Cookies.set("mode", folderSizeMode ? "Quality mode" : "Optimized mode", {
+            expires: 7
+        })
         readDir()
     }, [folderSizeMode])
 
@@ -46,7 +48,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, setIsOpen }) => {
                             <span className="text-gray-300 text-xs">Shows options that you can't do.</span>
                         </div>
                         <SwitchToggle checked={showDisabled} onChange={() => {
-                            Cookies.set("show-disabled", `${!showDisabled}`);
+                            Cookies.set("show-disabled", `${!showDisabled}`, {
+                                expires: 7
+                            });
                             setShowDisabled((prev) => (!prev))
                         }} />
                     </div>
@@ -65,7 +69,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, setIsOpen }) => {
                             <span className="text-gray-300 text-xs">If you disable caching, you will get the real updated folder information. Other clients won't be able to see the update if you make a change to current folder without refreshing. It's good for performance to use caching.</span>
                         </div>
                         <SwitchToggle checked={disableCaching} onChange={() => {
-                            Cookies.set("disable-caching", `${!disableCaching}`);
+                            Cookies.set("disable-caching", `${!disableCaching}`, {
+                                expires: 7
+                            });
                             setDisableCaching((prev) => (!prev))
                         }} />
                     </div>

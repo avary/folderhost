@@ -1,5 +1,5 @@
 import FileExplorer from '../../components/FileExplorer/FileExplorer';
-import OptionsBar from '../../components/Options/OptionsBar';
+import OptionsBar from '../../components/OptionsBar/OptionsBar';
 import ItemInfo from '../../components/DirItemInfo/ItemInfo';
 import { useState, useEffect, useRef } from 'react';
 import Cookies from 'js-cookie';

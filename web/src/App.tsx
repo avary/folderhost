@@ -1,8 +1,9 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import "./global.css";
 import loadingGIF from "./assets/loading.gif"
 import fullLogo from "./assets/folderhost-logo.webp"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const ExplorerPage = lazy(() => import('./pages/ExplorerPage/Explorer'));
 const Home = lazy(() => import('./pages/HomePage/Home'));
@@ -19,6 +20,26 @@ const EditUser = lazy(() => import('./pages/EditUser/EditUser'));
 const Default = lazy(() => import('./components/templates/Default'));
 
 function App() {
+  useEffect(() => {
+    const cookiesToRenew = [
+        "show-disabled",
+        "mode", 
+        "disable-caching",
+        "editor-fontsize",
+        "editor-minimap"
+      ];
+
+    cookiesToRenew.forEach(cookieKey => {
+      const cookieValue = Cookies.get(cookieKey)
+
+      if (cookieValue) {
+        Cookies.set(cookieKey, cookieValue, {
+          expires: 7
+        })
+      }
+    });
+  }, [])
+
   return (
     <BrowserRouter>
       <Suspense fallback={
