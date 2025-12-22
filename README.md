@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="500" height="160" alt="image" src="https://github.com/user-attachments/assets/85e0398c-c0f6-4f44-8c67-13d141cf1335" />
+  <img width="600" height="160" alt="image" src="https://github.com/user-attachments/assets/599f210a-416d-4713-adcb-900cda8f279d" />
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/language-Go-blue?style=flat-square" alt="Go Language">
