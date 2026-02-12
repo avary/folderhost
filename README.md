@@ -84,11 +84,10 @@ chmod +x folderhost
 
 | Feature | FolderHost | Nextcloud |
 |---------|-----------|-----------|
-| **Binary Size** | 23MB | 200MB+ |
+| **Binary Size** | ~23MB | 200MB+ |
 | **Dependencies** | None | PHP+Database |
-| **Setup Time** | 30 seconds | 10+ minutes |
+| **Setup Time** | 30 seconds | 15+ minutes |
 | Single Binary | ✅ | ❌ |
-| Zero Dependencies | ✅ | ❌ |
 | Real-time Editing | ✅ | ❌ |
 | Easy Setup | ✅ | ❌ |
 
