@@ -12,6 +12,10 @@
   <a href="https://github.com/MertJSX/folderhost/releases">
     <img alt="Downloads" src="https://img.shields.io/github/downloads/MertJSX/folderhost/total?style=flat-square">
   </a>
+  <a href="https://hub.docker.com/r/mertjsx/folderhost">
+    <img alt="Docker pulls"
+src="https://img.shields.io/docker/pulls/mertjsx/folderhost">
+  </a>
 </p>
 
 <p align="center">
