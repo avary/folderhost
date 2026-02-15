@@ -12,6 +12,8 @@ import {
 import {
   MdExplore
 } from 'react-icons/md';
+import { LuUpload } from "react-icons/lu";
+import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import convertToBytes from '../../utils/convertToBytes';
 import ExplorerRightclickMenu from '../ExplorerRightclickMenu/ExplorerRightclickMenu';
@@ -34,7 +36,7 @@ const FileExplorer: React.FC = () => {
     path, directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, readDir, getParent, setShowCreateItemMenu, downloading, permissions, unzipping, waitingResponse, contextMenu, deleteItem, setContextMenu, scrollIndex, isDirLoading: isLoading
   } = useContext<ExplorerContextType>(ExplorerContext)
 
-  const updateSort = useCallback((key: string, direction: string ) => {
+  const updateSort = useCallback((key: string, direction: string) => {
     let sortedItems = [...directory ?? []];
 
     switch (key) {
@@ -71,7 +73,7 @@ const FileExplorer: React.FC = () => {
     }
 
     updateSort(key, direction)
-    
+
     setSortConfig({ key, direction });
   }, [sortConfig, updateSort]);
 
@@ -232,6 +234,15 @@ const FileExplorer: React.FC = () => {
               <span className="max-w-[120px] md:max-w-[200px] truncate">{directoryInfo.name}</span>
             </button>
           )}
+          {
+            directoryInfo && permissions?.upload_files && (
+              <Link 
+              className='flex items-center gap-2 p-2 md:p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors' 
+              to={"/upload/"+ encodeURIComponent(directoryInfo.path)}>
+                <LuUpload size={18} />
+              </Link>
+            )
+          }
           {permissions?.create ? <button
             className='flex items-center gap-2 p-2 md:p-3 bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-colors'
             onClick={() => setShowCreateItemMenu(true)}
