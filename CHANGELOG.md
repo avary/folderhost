@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+## Added
+
+- File Explorer: Another button to upload your files on current directory.
+
 ## [25.12.5] - 2025-12-19
 
 ### Added
