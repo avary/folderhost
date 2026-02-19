@@ -1,7 +1,7 @@
 package users
 
 import (
-	"github.com/MertJSX/folder-host-go/database"
+	"github.com/MertJSX/folderhost/database"
 )
 
 func RemoveUser(id int) error {

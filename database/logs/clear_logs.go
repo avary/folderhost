@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/MertJSX/folder-host-go/database"
+	"github.com/MertJSX/folderhost/database"
 )
 
 func ClearOldLogs(days int) error {

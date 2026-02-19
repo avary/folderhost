@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/MertJSX/folder-host-go/utils"
+	"github.com/MertJSX/folderhost/utils"
 )
 
 func (sm *ServiceManager) GetServiceRAMUsage(name string) (int64, error) {

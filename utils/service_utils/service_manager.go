@@ -13,7 +13,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/MertJSX/folder-host-go/utils"
+	"github.com/MertJSX/folderhost/utils"
 	"github.com/stretchr/testify/assert/yaml"
 )
 

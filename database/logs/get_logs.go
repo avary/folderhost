@@ -3,8 +3,8 @@ package logs
 import (
 	"fmt"
 
-	"github.com/MertJSX/folder-host-go/database"
-	"github.com/MertJSX/folder-host-go/types"
+	"github.com/MertJSX/folderhost/database"
+	"github.com/MertJSX/folderhost/types"
 )
 
 func SearchLogs(limit, skip int) ([]types.AuditLog, error) {

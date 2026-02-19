@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/MertJSX/folder-host-go/database/logs"
-	"github.com/MertJSX/folder-host-go/utils/config"
+	"github.com/MertJSX/folderhost/database/logs"
+	"github.com/MertJSX/folderhost/utils/config"
 )
 
 func AutoClearOldLogs() {

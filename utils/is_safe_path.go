@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/MertJSX/folder-host-go/utils/config"
+	"github.com/MertJSX/folderhost/utils/config"
 )
 
 func IsSafePath(requestedPath string) bool {

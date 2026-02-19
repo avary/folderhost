@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 
-	"github.com/MertJSX/folder-host-go/database"
+	"github.com/MertJSX/folderhost/database"
 )
 
 func UpdateUserPassword(id int, newPassword string) error {

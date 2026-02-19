@@ -4,8 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 
-	"github.com/MertJSX/folder-host-go/database"
-	"github.com/MertJSX/folder-host-go/types"
+	"github.com/MertJSX/folderhost/database"
+	"github.com/MertJSX/folderhost/types"
 )
 
 func UpdateAdmin(user *types.Account) error {

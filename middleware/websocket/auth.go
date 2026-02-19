@@ -3,9 +3,9 @@ package websocket
 import (
 	"strings"
 
-	"github.com/MertJSX/folder-host-go/database/users"
-	"github.com/MertJSX/folder-host-go/utils"
-	"github.com/MertJSX/folder-host-go/utils/config"
+	"github.com/MertJSX/folderhost/database/users"
+	"github.com/MertJSX/folderhost/utils"
+	"github.com/MertJSX/folderhost/utils/config"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 )

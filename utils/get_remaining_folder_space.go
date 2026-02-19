@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/MertJSX/folder-host-go/utils/config"
+	"github.com/MertJSX/folderhost/utils/config"
 )
 
 func GetRemainingFolderSpace() (int64, error) {

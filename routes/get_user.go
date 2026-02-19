@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"github.com/MertJSX/folder-host-go/database/users"
-	"github.com/MertJSX/folder-host-go/types"
-	"github.com/MertJSX/folder-host-go/utils/cache"
+	"github.com/MertJSX/folderhost/database/users"
+	"github.com/MertJSX/folderhost/types"
+	"github.com/MertJSX/folderhost/utils/cache"
 	"github.com/gofiber/fiber/v2"
 )
 

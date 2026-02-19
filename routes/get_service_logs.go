@@ -3,7 +3,7 @@ package routes
 import (
 	"net/url"
 
-	serviceutils "github.com/MertJSX/folder-host-go/utils/service_utils"
+	serviceutils "github.com/MertJSX/folderhost/utils/service_utils"
 	"github.com/gofiber/fiber/v2"
 )
 

@@ -3,8 +3,8 @@ package users
 import (
 	"database/sql"
 
-	"github.com/MertJSX/folder-host-go/database"
-	"github.com/MertJSX/folder-host-go/types"
+	"github.com/MertJSX/folderhost/database"
+	"github.com/MertJSX/folderhost/types"
 )
 
 func GetUserByUsername(username string) (types.Account, error) {

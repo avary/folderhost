@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/MertJSX/folder-host-go/types"
+	"github.com/MertJSX/folderhost/types"
 )
 
 func GetDirectorySize(DirectoryPath string) (int64, string, error) {

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/MertJSX/folder-host-go/utils/cache"
+	"github.com/MertJSX/folderhost/utils/cache"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

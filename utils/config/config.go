@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/MertJSX/folder-host-go/types"
+	"github.com/MertJSX/folderhost/types"
 )
 
 var Config types.ConfigFile

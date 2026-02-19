@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/MertJSX/folder-host-go/database"
-	"github.com/MertJSX/folder-host-go/types"
+	"github.com/MertJSX/folderhost/database"
+	"github.com/MertJSX/folderhost/types"
 )
 
 func CreateRecoveryRecord(record types.RecoveryRecord) error {

@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/MertJSX/folder-host-go/utils/config"
+	"github.com/MertJSX/folderhost/utils/config"
 )
 
 func ReplaceHostPrefix(input string, scope string) string {

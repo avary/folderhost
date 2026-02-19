@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/MertJSX/folder-host-go/utils/config"
+	"github.com/MertJSX/folderhost/utils/config"
 	"gopkg.in/yaml.v3"
 )
 

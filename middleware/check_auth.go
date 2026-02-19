@@ -5,10 +5,10 @@ import (
 	"encoding/hex"
 	"time"
 
-	"github.com/MertJSX/folder-host-go/database/users"
-	"github.com/MertJSX/folder-host-go/utils"
-	"github.com/MertJSX/folder-host-go/utils/cache"
-	"github.com/MertJSX/folder-host-go/utils/config"
+	"github.com/MertJSX/folderhost/database/users"
+	"github.com/MertJSX/folderhost/utils"
+	"github.com/MertJSX/folderhost/utils/cache"
+	"github.com/MertJSX/folderhost/utils/config"
 	"github.com/gofiber/fiber/v2"
 )
 

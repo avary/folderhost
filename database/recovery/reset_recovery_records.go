@@ -3,7 +3,7 @@ package recovery
 import (
 	"fmt"
 
-	"github.com/MertJSX/folder-host-go/database"
+	"github.com/MertJSX/folderhost/database"
 )
 
 func ResetRecoveryRecords(scope string) error {

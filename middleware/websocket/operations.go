@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/MertJSX/folder-host-go/types"
-	"github.com/MertJSX/folder-host-go/utils"
-	"github.com/MertJSX/folder-host-go/utils/config"
+	"github.com/MertJSX/folderhost/types"
+	"github.com/MertJSX/folderhost/utils"
+	"github.com/MertJSX/folderhost/utils/config"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 )

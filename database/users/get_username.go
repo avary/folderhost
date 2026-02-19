@@ -3,7 +3,7 @@ package users
 import (
 	"database/sql"
 
-	"github.com/MertJSX/folder-host-go/database"
+	"github.com/MertJSX/folderhost/database"
 )
 
 func GetUsername(id int) (string, error) {

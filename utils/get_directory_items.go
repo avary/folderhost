@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/MertJSX/folder-host-go/types"
+	"github.com/MertJSX/folderhost/types"
 )
 
 type directoryID struct {

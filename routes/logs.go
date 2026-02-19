@@ -3,8 +3,8 @@ package routes
 import (
 	"strconv"
 
-	"github.com/MertJSX/folder-host-go/database/logs"
-	"github.com/MertJSX/folder-host-go/types"
+	"github.com/MertJSX/folderhost/database/logs"
+	"github.com/MertJSX/folderhost/types"
 	"github.com/gofiber/fiber/v2"
 )
 

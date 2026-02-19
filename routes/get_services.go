@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"github.com/MertJSX/folder-host-go/types"
-	serviceutils "github.com/MertJSX/folder-host-go/utils/service_utils"
+	"github.com/MertJSX/folderhost/types"
+	serviceutils "github.com/MertJSX/folderhost/utils/service_utils"
 	"github.com/gofiber/fiber/v2"
 )
 

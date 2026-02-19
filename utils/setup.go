@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/MertJSX/folder-host-go/resources"
+	"github.com/MertJSX/folderhost/resources"
 )
 
 func Setup() {

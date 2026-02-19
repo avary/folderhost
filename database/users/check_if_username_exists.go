@@ -3,7 +3,7 @@ package users
 import (
 	"fmt"
 
-	"github.com/MertJSX/folder-host-go/database"
+	"github.com/MertJSX/folderhost/database"
 )
 
 func CheckIfUsernameExists(username string) (bool, error) {

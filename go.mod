@@ -1,4 +1,4 @@
-module github.com/MertJSX/folder-host-go
+module github.com/MertJSX/folderhost
 
 go 1.24.5
 

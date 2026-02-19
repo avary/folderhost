@@ -3,8 +3,8 @@ package recovery
 import (
 	"fmt"
 
-	"github.com/MertJSX/folder-host-go/database"
-	"github.com/MertJSX/folder-host-go/types"
+	"github.com/MertJSX/folderhost/database"
+	"github.com/MertJSX/folderhost/types"
 )
 
 func GetRecoveryRecord(id int) (types.RecoveryRecord, error) {

@@ -1,8 +1,8 @@
 package users
 
 import (
-	"github.com/MertJSX/folder-host-go/database"
-	"github.com/MertJSX/folder-host-go/types"
+	"github.com/MertJSX/folderhost/database"
+	"github.com/MertJSX/folderhost/types"
 )
 
 func UpdateUser(id int, user *types.Account) error {

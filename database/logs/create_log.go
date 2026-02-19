@@ -5,9 +5,9 @@ import (
 	"log"
 	"regexp"
 
-	"github.com/MertJSX/folder-host-go/database"
-	"github.com/MertJSX/folder-host-go/types"
-	"github.com/MertJSX/folder-host-go/utils/config"
+	"github.com/MertJSX/folderhost/database"
+	"github.com/MertJSX/folderhost/types"
+	"github.com/MertJSX/folderhost/utils/config"
 )
 
 func CreateLog(logItem types.AuditLog) error {
