@@ -119,17 +119,11 @@ func main() {
 		return c.Next()
 	})
 
-	app.Get("/ws/:path", websocket.New(func(c *websocket.Conn) {
-		fhWS.HandleWebsocket(c)
-	}))
+	app.Get("/ws/:path", websocket.New(fhWS.HandleWebsocket))
 
-	app.Get("/download", func(c *fiber.Ctx) error {
-		return routes.Download(c)
-	})
+	app.Get("/download", routes.Download)
 
-	app.Use("/api", func(c *fiber.Ctx) error {
-		return middleware.CheckAuth(c)
-	})
+	app.Use("/api", middleware.CheckAuth)
 
 	app.Get("/api/user-info", func(c *fiber.Ctx) error {
 		return c.Status(200).JSON(fiber.Map{
@@ -137,105 +131,55 @@ func main() {
 		})
 	})
 
-	app.Get("/api/read-file", func(c *fiber.Ctx) error {
-		return routes.ReadFile(c)
-	})
+	app.Get("/api/read-file", routes.ReadFile)
 
-	app.Get("/api/image/:path", func(c *fiber.Ctx) error {
-		return routes.Image(c)
-	})
+	app.Get("/api/image/:path", routes.Image)
 
-	app.Post("/api/verify-password", func(c *fiber.Ctx) error {
-		return routes.VerifyPassword(c)
-	})
+	app.Post("/api/verify-password", routes.VerifyPassword)
 
-	app.Get("/api/permissions", func(c *fiber.Ctx) error {
-		return routes.GetPermissions(c)
-	})
+	app.Get("/api/permissions", routes.GetPermissions)
 
-	app.Get("/api/explorer/read-dir", func(c *fiber.Ctx) error {
-		return routes.ReadDirectory(c)
-	})
+	app.Get("/api/explorer/read-dir", routes.ReadDirectory)
 
-	app.Get("/api/explorer/get-download-link", func(c *fiber.Ctx) error {
-		return routes.GetDownloadLink(c)
-	})
+	app.Get("/api/explorer/get-download-link", routes.GetDownloadLink)
 
-	app.Post("/api/upload", func(c *fiber.Ctx) error {
-		return routes.ChunkedUpload(c)
-	})
+	app.Post("/api/upload", routes.ChunkedUpload)
 
-	app.Get("/api/services", func(c *fiber.Ctx) error {
-		return routes.GetServices(c)
-	})
+	app.Get("/api/services", routes.GetServices)
 
-	app.Get("/api/services/logs/:service", func(c *fiber.Ctx) error {
-		return routes.GetServiceLogs(c)
-	})
+	app.Get("/api/services/logs/:service", routes.GetServiceLogs)
 
-	app.Post("/api/services/send-command", func(c *fiber.Ctx) error {
-		return routes.SendServiceCommand(c)
-	})
+	app.Post("/api/services/send-command", routes.SendServiceCommand)
 
-	app.Delete("/api/explorer/delete", func(c *fiber.Ctx) error {
-		return routes.Delete(c)
-	})
+	app.Delete("/api/explorer/delete", routes.Delete)
 
-	app.Post("/api/explorer/create-item", func(c *fiber.Ctx) error {
-		return routes.CreateItem(c)
-	})
+	app.Post("/api/explorer/create-item", routes.CreateItem)
 
-	app.Post("/api/explorer/create-copy", func(c *fiber.Ctx) error {
-		return routes.CreateCopy(c)
-	})
+	app.Post("/api/explorer/create-copy", routes.CreateCopy)
 
-	app.Put("/api/explorer/rename", func(c *fiber.Ctx) error {
-		return routes.Rename(c)
-	})
+	app.Put("/api/explorer/rename", routes.Rename)
 
-	app.Get("/api/recovery", func(c *fiber.Ctx) error {
-		return routes.Recovery(c)
-	})
+	app.Get("/api/recovery", routes.Recovery)
 
-	app.Put("/api/recovery/recover", func(c *fiber.Ctx) error {
-		return routes.RecoverItem(c)
-	})
+	app.Put("/api/recovery/recover", routes.RecoverItem)
 
-	app.Delete("/api/recovery/remove", func(c *fiber.Ctx) error {
-		return routes.RemoveRecoveryRecord(c)
-	})
+	app.Delete("/api/recovery/remove", routes.RemoveRecoveryRecord)
 
-	app.Delete("/api/recovery/clear", func(c *fiber.Ctx) error {
-		return routes.ResetRecoveryRecords(c)
-	})
+	app.Delete("/api/recovery/clear", routes.ResetRecoveryRecords)
 
-	app.Get("/api/users", func(c *fiber.Ctx) error {
-		return routes.GetAllUsers(c)
-	})
+	app.Get("/api/users", routes.GetAllUsers)
 
-	app.Get("/api/users/:username", func(c *fiber.Ctx) error {
-		return routes.GetUser(c)
-	})
+	app.Get("/api/users/:username", routes.GetUser)
 
-	app.Put("/api/users/edit", func(c *fiber.Ctx) error {
-		return routes.EditUser(c)
-	})
+	app.Put("/api/users/edit", routes.EditUser)
 
-	app.Put("/api/users/change-password", func(c *fiber.Ctx) error {
-		return routes.ChangeUserPassword(c)
-	})
+	app.Put("/api/users/change-password", routes.ChangeUserPassword)
 
-	app.Post("/api/users/new", func(c *fiber.Ctx) error {
-		return routes.CreateUser(c)
-	})
+	app.Post("/api/users/new", routes.CreateUser)
 
-	app.Delete("/api/users/remove/:id", func(c *fiber.Ctx) error {
-		return routes.RemoveUser(c)
-	})
+	app.Delete("/api/users/remove/:id", routes.RemoveUser)
 
-	app.Get("/api/logs", func(c *fiber.Ctx) error {
-		return routes.Logs(c)
-	})
+	app.Get("/api/logs", routes.Logs)
 
 	if !utils.IsDevelopment() {
 		distFS, err := fs.Sub(FrontendFS, "web/dist")
