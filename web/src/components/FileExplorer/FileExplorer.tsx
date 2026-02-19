@@ -237,6 +237,7 @@ const FileExplorer: React.FC = () => {
           {
             directoryInfo && permissions?.upload_files && (
               <Link 
+              target='_blank'
               className='flex items-center gap-2 p-2 md:p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors' 
               to={"/upload/"+ encodeURIComponent(directoryInfo.path)}>
                 <LuUpload size={18} />
