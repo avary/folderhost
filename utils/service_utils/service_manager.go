@@ -177,6 +177,7 @@ func (sm *ServiceManager) ListAllowedServices(username string) []ServiceStatus {
 	defer sm.Mu.RUnlock()
 
 	var serviceStatuses []ServiceStatus = []ServiceStatus{}
+outerLoop:
 	for name, service := range sm.Services {
 		service.mu.RLock()
 
@@ -185,7 +186,7 @@ func (sm *ServiceManager) ListAllowedServices(username string) []ServiceStatus {
 				break
 			}
 			if len(service.Config.Users)-1 == i {
-				return serviceStatuses
+				continue outerLoop
 			}
 		}
 
@@ -212,7 +213,7 @@ func (sm *ServiceManager) ListAllowedServices(username string) []ServiceStatus {
 		}
 
 		serviceStatuses = append(serviceStatuses, status)
-		service.mu.RUnlock()
+		defer service.mu.RUnlock()
 	}
 
 	return serviceStatuses
