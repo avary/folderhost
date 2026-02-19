@@ -17,6 +17,6 @@ setup:
 	@echo "Downloading dependencies..."
 	go mod tidy
 	go mod download
-	cd web && npm install
+	cd web && npm install && npm run build
 
 	@echo "Dependencies are downloaded successfully."
