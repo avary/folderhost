@@ -1,99 +1,189 @@
-import { MdMiscellaneousServices } from "react-icons/md";
-import { FaClock, FaTools } from "react-icons/fa";
-import { BiSolidParty } from "react-icons/bi";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  MdStop, MdRefresh, MdCheckCircle, MdError, MdSchedule, MdMemory
+} from "react-icons/md";
+import { FaServer, FaClock } from "react-icons/fa";
+import { FaScrewdriverWrench } from "react-icons/fa6";
+import axiosInstance from '../../utils/axiosInstance';
+import { type Service } from "../../types/Service";
+import { formatUptime } from "../../utils/formatUptime";
+import MessageBox from "../../components/minimal/MessageBox/MessageBox";
 
-const Services = () => {
+const Services: React.FC = () => {
+  const navigate = useNavigate();
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
   useEffect(() => {
-    document.title = "Services - folderhost"
-  },[])
-  return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-120px)] bg-slate-900 p-6">
-      <div className="flex flex-col items-center gap-6 bg-slate-800 border border-slate-700 rounded-xl p-4 max-w-2xl w-full shadow-2xl">
-        {/* Icon */}
-        <div className="p-6 bg-slate-700 rounded-2xl border border-slate-600">
-          <MdMiscellaneousServices className="w-20 h-20 text-sky-500" />
-        </div>
+    document.title = "Services - folderhost";
+    fetchServices();
+    
+    const interval = setInterval(fetchServices, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
-        {/* Title */}
-        <h1 className="text-4xl font-extrabold text-white text-center">
-          Services
-        </h1>
+  const fetchServices = async () => {
+    try {
+      setRefreshing(true);
+      const { data } = await axiosInstance.get("/services");
+      setServices(data.services);
+      setError("");
+    } catch (err: any) {
+      setError(err.response?.data?.err || "Failed to load services");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
-        {/* Coming Soon Badge */}
-        <div className="flex items-center gap-2 bg-sky-600/20 border border-sky-500/50 rounded-lg px-4 py-2">
-          <FaClock className="w-5 h-5 text-sky-400" />
-          <span className="text-sky-400 font-semibold">Coming Soon</span>
-        </div>
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'running': return 'text-emerald-500 bg-emerald-500/90';
+      case 'stopped': return 'text-rose-500 bg-rose-500/10';
+      case 'starting': case 'stopping': return 'text-amber-500 bg-amber-500/10';
+      default: return 'text-slate-500 bg-slate-500/10';
+    }
+  };
 
-        {/* Description */}
-        <p className="text-slate-400 text-center text-lg leading-relaxed">
-          The Services page is currently under development. This feature will allow you to manage and monitor your services that you configured in server settings.
-        </p>
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'running': return <MdCheckCircle className="w-6 h-6" />;
+      case 'stopped': return <MdStop className="w-6 h-6" />;
+      case 'starting': case 'stopping': return <MdSchedule className="w-6 h-6 animate-spin" />;
+      default: return <MdError className="w-4 h-4" />;
+    }
+  };
 
-          {/* Features List */}
-          <div className="w-full bg-slate-700/50 border border-slate-600 rounded-lg p-6 mt-4">
-            <div className="flex items-center gap-2 mb-4">
-              <FaTools className="w-5 h-5 text-sky-500" />
-              <h3 className="text-lg font-semibold text-white">Planned Features</h3>
-            </div>
-            <ul className="space-y-3 text-slate-300">
-              <li className="flex items-start gap-2">
-                <span className="text-sky-500 mt-1">•</span>
-                <span>Start, stop, and restart services</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-sky-500 mt-1">•</span>
-                <span>Monitor service status and health</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-sky-500 mt-1">•</span>
-                <span>Configure service settings and parameters</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-sky-500 mt-1">•</span>
-                <span>View service logs and diagnostics</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-sky-500 mt-1">•</span>
-                <span>Run commands inside service</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-sky-500 mt-1">•</span>
-                <span>Permission-based access control</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Use case List */}
-          <div className="w-full bg-slate-700/50 border border-slate-600 rounded-lg p-6 mt-4">
-            <div className="flex items-center gap-2 mb-4">
-              <BiSolidParty className="w-5 h-5 text-sky-500" />
-              <h3 className="text-lg font-semibold text-white">Use Cases</h3>
-            </div>
-            <ul className="space-y-3 text-slate-300">
-              <li className="flex items-start gap-2">
-                <span className="text-sky-500 mt-1">•</span>
-                <span>Web servers</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-sky-500 mt-1">•</span>
-                <span>Game servers</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-sky-500 mt-1">•</span>
-                <span>And much more...</span>
-              </li>
-            </ul>
-          </div>
-
-        {/* Footer Message */}
-        <p className="text-slate-500 text-sm text-center mt-4">
-          Stay tuned for updates! This feature will be available in a future release.
-        </p>
+  if (loading) {
+    return (
+      <div className="min-h-[calc(100vh-120px)] bg-slate-900 flex items-center justify-center">
+        <div className="text-slate-400">Loading services...</div>
       </div>
-    </div>
-  )
-}
+    );
+  }
 
-export default Services
+  return (
+    <div className="min-h-[calc(100vh-120px)] bg-slate-900">
+      <MessageBox message={error || message} isErr={!!error} setMessage={setError} />
+      
+      <main className="mt-10">
+        <div className="flex flex-col items-center px-6">
+          <section className="flex flex-col bg-gray-800 gap-6 w-4/5 max-w-[1200px] p-6 min-w-[400px] min-h-[600px] shadow-2xl rounded-lg">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-sky-500 rounded-lg">
+                  <FaServer size={28} className="text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-white">Services</h1>
+                  <p className="text-gray-400">Manage your running services</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <span className="text-base text-gray-300">
+                  <span className="font-semibold text-white">{services.filter(s => s.status === 'running').length}</span> running,{' '}
+                  <span className="font-semibold text-white">{services.length}</span> total
+                </span>
+                <button
+                  onClick={fetchServices}
+                  disabled={refreshing}
+                  className="p-2 bg-gray-700 text-gray-400 rounded-lg hover:bg-gray-600 hover:text-sky-400 transition-colors disabled:opacity-50"
+                  title="Refresh"
+                >
+                  <MdRefresh className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            </div>
+
+            <hr className="border-gray-600" />
+
+            {/* Services Grid */}
+            <section className="flex flex-col gap-4 overflow-y-auto flex-1 pr-2">
+              {services.length === 0 ? (
+                <div className="flex flex-col items-center justify-center text-gray-400 py-12">
+                  <FaServer size={48} className="mb-4 opacity-50" />
+                  <h1 className="text-lg">No Services Configured</h1>
+                  <p className="text-sm mt-2">Add services to services.yml to get started</p>
+                </div>
+              ) : (
+                services.map((service) => {
+                  const statusColor = getStatusColor(service.status);
+                  
+                  return (
+                    <article
+                      key={service.name}
+                      className="bg-gray-700 rounded-lg border border-gray-600 hover:shadow-xl transition-all"
+                    >
+                      <div className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className={`p-2 rounded-lg ${statusColor}`}>
+                              {getStatusIcon(service.status)}
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-semibold text-white">{service.title}</h3>
+                              <p className="text-sm text-gray-400">{service.name}</p>
+                              {service.pid && (
+                                <p className="text-xs text-gray-500 mt-1">PID: {service.pid}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 text-sm p-3">
+                          <div className="flex items-center gap-2">
+                            <MdMemory className="text-gray-400 w-4 h-4" />
+                            RAM:
+                            <span className="text-gray-300">
+                              {service.ram_usage_str || '0 B'} / {service.ram}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <FaClock className="text-gray-400 w-4 h-4" />
+                            Uptime:
+                            <span className="text-gray-300">{formatUptime(service.uptime)}</span>
+                          </div>
+                        </div>
+
+                        {/* Progress Bar */}
+                        {service.ram_bytes && service.ram_usage && (
+                          <div className="mt-3">
+                            <div className="h-1.5 bg-gray-600 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-sky-500 transition-all duration-500"
+                                style={{ width: `${(service.ram_usage / service.ram_bytes) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Actions */}
+                      <div className="p-3 bg-gray-800/50 border-t border-gray-600">
+                        <button
+                          onClick={() => navigate(`/services/${service.name}`)}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-sky-400 transition-colors"
+                        >
+                          <FaScrewdriverWrench className="w-5 h-5" />
+                          <span>Manage</span>
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })
+              )}
+            </section>
+          </section>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Services;
