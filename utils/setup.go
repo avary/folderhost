@@ -45,6 +45,21 @@ func Setup() {
 		}
 	}
 
+	if IsNotExistingPath("./services.yml") {
+		fmt.Println("Creating services.yml file...")
+		servicesContent, err := resources.DefaultServices.ReadFile("default_services.yml")
+
+		if err != nil {
+			log.Fatalf("Error reading embedded file: %s", err)
+		}
+
+		err = os.WriteFile("services.yml", servicesContent, 0700)
+
+		if err != nil {
+			log.Fatalf("Error creating services.yml")
+		}
+	}
+
 	if IsNotExistingPath("recovery_bin") {
 		fmt.Println("Creating /recovery_bin folder...")
 		err := os.Mkdir("recovery_bin", 0700)
