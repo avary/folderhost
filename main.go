@@ -6,7 +6,10 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"runtime"
+	"syscall"
 
 	"github.com/MertJSX/folder-host-go/database/initialize"
 	"github.com/MertJSX/folder-host-go/middleware"
@@ -17,6 +20,7 @@ import (
 	"github.com/MertJSX/folder-host-go/utils"
 	"github.com/MertJSX/folder-host-go/utils/cache"
 	"github.com/MertJSX/folder-host-go/utils/config"
+	serviceutils "github.com/MertJSX/folder-host-go/utils/service_utils"
 	"github.com/MertJSX/folder-host-go/utils/tasks"
 	"github.com/fatih/color"
 	"github.com/gofiber/contrib/websocket"
@@ -72,6 +76,41 @@ func main() {
 		}
 	}
 	var PORT string = fmt.Sprintf(":%d", portInt)
+	var skipServices bool = false
+
+	serviceutils.GlobalServiceManager = serviceutils.NewServiceManager()
+
+	err := serviceutils.GlobalServiceManager.LoadConfig("services.yml")
+	if err != nil {
+		log.Printf("Warning: Can't load services.yml: %v", err)
+		skipServices = true // Services are optional
+	}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
+
+	go func() {
+		<-c
+
+		if !skipServices && serviceutils.GlobalServiceManager.Config.Enabled {
+			log.Printf("Stopping services...")
+
+			serviceutils.GlobalServiceManager.Shutdown()
+		}
+
+		log.Println("Stopping program...")
+		os.Exit(0)
+	}()
+
+	if !skipServices && serviceutils.GlobalServiceManager.Config.Enabled {
+		for name, service := range serviceutils.GlobalServiceManager.Services {
+			if service.Config.AutoStart {
+				if err := serviceutils.GlobalServiceManager.StartService(name); err != nil {
+					log.Printf("%s could not be started: %v", name, err)
+				}
+			}
+		}
+	}
 
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
@@ -124,6 +163,18 @@ func main() {
 
 	app.Post("/api/upload", func(c *fiber.Ctx) error {
 		return routes.ChunkedUpload(c)
+	})
+
+	app.Get("/api/services", func(c *fiber.Ctx) error {
+		return routes.GetServices(c)
+	})
+
+	app.Get("/api/services/logs/:service", func(c *fiber.Ctx) error {
+		return routes.GetServiceLogs(c)
+	})
+
+	app.Post("/api/services/send-command", func(c *fiber.Ctx) error {
+		return routes.SendServiceCommand(c)
 	})
 
 	app.Delete("/api/explorer/delete", func(c *fiber.Ctx) error {
@@ -250,7 +301,11 @@ func main() {
 		fmt.Printf("\n")
 	}
 
-	warningText.Printf("\nPlease restart the server if you make changes on config.yml!\n\n")
+	if !serviceutils.GlobalServiceManager.Config.Enabled {
+		defaultText.Print("\nServices are disabled. You can enable them if you need from services.yml!")
+	}
+
+	warningText.Printf("\nPlease restart the server if you make changes on config.yml or services.yml!\n\n")
 
 	if err := app.Listen(PORT); err != nil {
 		log.Fatalf("Server error: %v", err)
