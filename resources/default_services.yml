@@ -1,0 +1,44 @@
+################################
+#  FolderHost Services [BETA]  #
+################################
+
+# It will be good to give feedback if you encounter any issues!
+# Report: https://github.com/MertJSX/folderhost/issues
+# Send me an email for security issues: contact@mertjs.dev
+
+enable_services: false # Don't forget to enable it if you're going to use them.
+services:
+  # # Here are some example services. You can also create your own service.
+  # 
+  # - title: "Minecraft Server" 
+  #   workdir: "./host/mcserver" # Where you wanna run this script.
+  #   # Script to start the service. Make sure to not use shellscripts for that.
+  #   # Because It's not safe if it's located in host folder.
+  #   script: "java -Xmx4G -jar paper-1.21.11-116.jar nogui"
+  #   ram: "4 GB" # RAM Limit. You can also use MB values like 720 MB etc.
+  #   auto_start: true # Auto start with folderhost
+  #   auto_restart: false # Do you want auto restart after crach or something?
+  #   allow_executing_commands: true # You can disable it for security.
+  #   users: # users that are not listed here can't even see them.
+  #   - username: "mertjs"
+  #     permissions: # user permissions
+  #       start: true
+  #       stop: true
+  #       read_logs: true
+  #       execute_commands: true
+  #
+  # # Here is an another example
+  # - title: "Web Server"
+  #   workdir: "./host/mywebsite"
+  #   script: "http-server"
+  #   ram: "0 GB" # 0 means unlimited.
+  #   auto_start: true
+  #   auto_restart: false
+  #   allow_executing_commands: false
+  #   users:
+  #   - username: "mertjs"
+  #     permissions:
+  #       start: true
+  #       stop: true
+  #       read_logs: true
+  #       execute_commands: false
