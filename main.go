@@ -147,6 +147,14 @@ func main() {
 
 	app.Get("/api/services", routes.GetServices)
 
+	app.Get("/api/services/:service", routes.GetServiceStatus)
+
+	app.Get("/api/services/:service/permissions", routes.GetUserServicePermissions)
+
+	app.Put("/api/services/:service/stop", routes.StopService)
+
+	app.Put("/api/services/:service/start", routes.StartService)
+
 	app.Get("/api/services/logs/:service", routes.GetServiceLogs)
 
 	app.Post("/api/services/send-command", routes.SendServiceCommand)
