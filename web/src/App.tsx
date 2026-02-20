@@ -15,6 +15,7 @@ const Recovery = lazy(() => import('./pages/Recovery/Recovery'));
 const Users = lazy(() => import('./pages/Users/Users'));
 const Logs = lazy(() => import('./pages/Logs/Logs'));
 const Services = lazy(() => import('./pages/Services/Services'));
+const ServiceManager = lazy(() => import('./pages/ServiceManager/ServiceManager'));
 const NewUser = lazy(() => import('./pages/NewUser/NewUser'));
 const EditUser = lazy(() => import('./pages/EditUser/EditUser'));
 const Default = lazy(() => import('./components/templates/Default'));
@@ -73,6 +74,7 @@ function App() {
             </Route>
             <Route path="services">
               <Route index element={<Default><Services /></Default>} />
+              <Route path=":service" element={<Default><ServiceManager /></Default>} />
             </Route>
             <Route path="editor">
               <Route index element={<NoPage />} />
