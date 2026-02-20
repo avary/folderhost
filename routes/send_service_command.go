@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"github.com/MertJSX/folderhost/types"
 	serviceutils "github.com/MertJSX/folderhost/utils/service_utils"
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,7 +25,33 @@ func SendServiceCommand(c *fiber.Ctx) error {
 		)
 	}
 
-	err := serviceutils.GlobalServiceManager.SendCommand(requestBody.Service, requestBody.Command)
+	permissions, err := serviceutils.GlobalServiceManager.GetUserServicePermissions(requestBody.Service, c.Locals("account").(types.Account).Username)
+
+	if err != nil {
+		if err.Error() == "user not listed" {
+			return c.Status(403).JSON(
+				fiber.Map{
+					"err": "No permission",
+				},
+			)
+		}
+
+		return c.Status(500).JSON(
+			fiber.Map{
+				"err": err.Error(),
+			},
+		)
+	}
+
+	if !permissions.ExecuteCommands {
+		return c.Status(403).JSON(
+			fiber.Map{
+				"err": "No permission",
+			},
+		)
+	}
+
+	err = serviceutils.GlobalServiceManager.SendCommand(requestBody.Service, requestBody.Command)
 
 	if err != nil {
 		return c.Status(500).JSON(
