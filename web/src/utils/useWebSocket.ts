@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Cookies from 'js-cookie';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const useWebSocket = (path: string, shouldConnect: boolean) => {
+const useWebSocket = (path: string, shouldConnect: boolean, serviceName: string = "") => {
   const wsRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState<Boolean>(false);
   const [connectionError, setConnectionError] = useState<Boolean>(false);
@@ -24,7 +24,7 @@ const useWebSocket = (path: string, shouldConnect: boolean) => {
       return;
     }
 
-    const wsUrl = `${API_BASE_URL}/ws/${encodeURIComponent(path)}?token=${encodeURIComponent(token)}`;
+    const wsUrl = `${API_BASE_URL}/ws/${encodeURIComponent(path)}?token=${encodeURIComponent(token)}&serviceName=${serviceName}`;
 
     const websocket = new WebSocket(wsUrl);
 
