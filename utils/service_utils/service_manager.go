@@ -37,7 +37,6 @@ func (sm *ServiceManager) LoadConfig(filename string) error {
 			Config: service,
 			Status: "stopped",
 		}
-		// log.Printf("Service config loaded: %s (RAM: %s)", service.Title, service.RAM)
 	}
 
 	return nil
@@ -191,13 +190,14 @@ outerLoop:
 		}
 
 		status := ServiceStatus{
-			Name:     name,
-			Status:   service.Status,
-			PID:      service.PID,
-			Uptime:   time.Since(service.StartTime).Round(time.Second),
-			WorkDir:  service.WorkDir,
-			RAM:      service.Config.RAM,
-			RAMBytes: service.Config.RAMBytes,
+			Name:      name,
+			Status:    service.Status,
+			PID:       service.PID,
+			StartTime: service.StartTime,
+			Uptime:    time.Since(service.StartTime).Round(time.Second),
+			WorkDir:   service.WorkDir,
+			RAM:       service.Config.RAM,
+			RAMBytes:  service.Config.RAMBytes,
 		}
 
 		if service.Status == "running" {
@@ -349,6 +349,8 @@ func (sm *ServiceManager) StartService(name string) error {
 
 	cmd.Stdout = service.LogBuffer
 	cmd.Stderr = service.LogBuffer
+	service.LogBuffer.ServiceName = service.Config.Title
+	service.LogBuffer.Workdir = service.Config.Workdir
 
 	if service.Config.AllowExecutingCommands {
 		stdin, err := cmd.StdinPipe()
@@ -437,23 +439,38 @@ func (sm *ServiceManager) StopService(name string) error {
 	}
 
 	service.Status = "stopped"
+	pidToKill := service.PID
 
-	if err := killProcessTree(service.PID); err != nil {
-		log.Printf("Process tree kill error: %v", err)
+	log.Printf("Stopping service %s (PID: %d)...", name, pidToKill)
+
+	if err := killProcessTree(pidToKill); err != nil {
+		log.Printf("Process tree kill error for %s: %v", name, err)
 	}
 
-	time.Sleep(5 * time.Second)
+	deadline := time.Now().Add(10 * time.Second)
+	for time.Now().Before(deadline) {
+		process, err := os.FindProcess(pidToKill)
+		if err != nil || process.Signal(syscall.Signal(0)) != nil {
+			log.Printf("Service %s stopped successfully.", name)
+			service.CMD = nil
+			service.PID = 0
+			return nil
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
 
-	if process, err := os.FindProcess(service.PID); err == nil {
-		if err := process.Signal(syscall.Signal(0)); err == nil {
-			log.Printf("Process still working, sending SIGKILL: %d", service.PID)
-			process.Kill()
+	log.Printf("Timeout reached, forcefully killing service %s (PID: %d)", name, pidToKill)
+	if process, err := os.FindProcess(pidToKill); err == nil {
+		if err := process.Kill(); err != nil {
+			log.Printf("Force kill failed for %s: %v", name, err)
 		}
 	}
 
+	time.Sleep(100 * time.Millisecond)
+
 	service.CMD = nil
 	service.PID = 0
-	log.Printf("Service stopped: %s", name)
+	log.Printf("Service %s forcefully stopped.", name)
 	return nil
 }
 
@@ -471,6 +488,9 @@ func (sm *ServiceManager) GetUserServicePermissions(serviceName string, username
 
 	for _, v := range service.Config.Users {
 		if v.Username == username {
+			if !service.Config.AllowExecutingCommands {
+				v.Permissions.ExecuteCommands = false
+			}
 			return v.Permissions, nil
 		}
 	}

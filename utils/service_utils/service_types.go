@@ -31,10 +31,10 @@ type ServiceUsers struct {
 }
 
 type ServiceUserPermissions struct {
-	Start           bool `yaml:"start"`
-	Stop            bool `yaml:"stop"`
-	ReadLogs        bool `yaml:"read_logs"`
-	ExecuteCommands bool `yaml:"execute_commands"`
+	Start           bool `yaml:"start" json:"start"`
+	Stop            bool `yaml:"stop" json:"stop"`
+	ReadLogs        bool `yaml:"read_logs" json:"read_logs"`
+	ExecuteCommands bool `yaml:"execute_commands" json:"execute_commands"`
 }
 
 type ServiceManager struct {
@@ -72,9 +72,11 @@ type ServiceStatus struct {
 }
 
 type LogBuffer struct {
-	Lines    []string
-	MaxLines int
-	mu       sync.RWMutex
+	ServiceName string
+	Workdir     string
+	Lines       []string
+	MaxLines    int
+	mu          sync.RWMutex
 }
 
 type SoftLimiter struct {
