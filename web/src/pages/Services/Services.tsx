@@ -7,9 +7,9 @@ import { FaServer, FaClock } from "react-icons/fa";
 import { FaScrewdriverWrench } from "react-icons/fa6";
 import axiosInstance from '../../utils/axiosInstance';
 import MessageBox from "../../components/minimal/MessageBox/MessageBox";
-import moment from "moment";
 import { type ServiceStatus } from "../../types/ServiceStatus";
 import convertToBytes from "../../utils/convertToBytes";
+import { formatUptime } from "../../utils/formatUptime";
 
 const Services: React.FC = () => {
   const navigate = useNavigate();
@@ -18,20 +18,39 @@ const Services: React.FC = () => {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [refreshing, setRefreshing] = useState(false);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     document.title = "Services - folderhost";
     fetchServices();
-    
+
     const interval = setInterval(fetchServices, 15000);
-    return () => clearInterval(interval);
+    const uptimeInterval = setInterval(() => setTick(t => t + 1), 1000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(uptimeInterval);
+    }
   }, []);
 
   const fetchServices = async () => {
     try {
       setRefreshing(true);
       const { data } = await axiosInstance.get("/services");
-      setServices(data.services);
+
+      if (Array.isArray(data.services)) {
+        let newServices: Array<ServiceStatus> = [...data.services]
+        newServices = newServices.sort((a, b) => {
+          if (a.name < b.name) {
+            return -1
+          }
+          if (a.name > b.name) {
+            return 1
+          }
+          return 0
+        })
+        setServices([...newServices]);
+      }
       setError("");
     } catch (err: any) {
       setError(err.response?.data?.err || "Failed to load services");
@@ -70,7 +89,7 @@ const Services: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-120px)] bg-slate-900">
       <MessageBox message={error || message} isErr={!!error} setMessage={setError} />
-      
+
       <main className="mt-10">
         <div className="flex flex-col items-center px-6">
           <section className="flex flex-col bg-gray-800 gap-6 w-4/5 max-w-[1200px] p-6 min-w-[400px] min-h-[600px] shadow-2xl rounded-lg">
@@ -85,7 +104,7 @@ const Services: React.FC = () => {
                   <p className="text-gray-400">Manage your running services</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-4">
                 <span className="text-base text-gray-300">
                   <span className="font-semibold text-white">{services.filter(s => s.status === 'running').length}</span> running,{' '}
@@ -113,17 +132,9 @@ const Services: React.FC = () => {
                   <p className="text-sm mt-2">Add services to services.yml to get started</p>
                 </div>
               ) : (
-                services.sort((a, b) => {
-                  if (a.name < b.name) {
-                    return -1
-                  }
-                  if (a.name > b.name) {
-                    return 1
-                  }
-                  return 0
-                }).map((service, index) => {
+                services.map((service, index) => {
                   const statusColor = getStatusColor(service.status);
-                  
+
                   return (
                     <article
                       key={service.name}
@@ -137,7 +148,7 @@ const Services: React.FC = () => {
                             </div>
                             <div>
                               <h3 className="text-lg font-semibold text-white">{service.name}</h3>
-                              <p className="text-sm text-gray-400">Service: {index+1}</p>
+                              <p className="text-sm text-gray-400">Service: {index + 1}</p>
                               {service.pid && (
                                 <p className="text-xs text-gray-500 mt-1">PID: {service.pid}</p>
                               )}
@@ -158,8 +169,8 @@ const Services: React.FC = () => {
                             Uptime:
                             {
                               service.status == "running" ?
-                              <span className="text-gray-300">{moment.utc(moment.duration(moment().diff(moment(service.start_time))).asMilliseconds()).format("HH[h] mm[m] ss[s]")}</span>
-                              : " Not working"
+                                <span className="text-gray-300">{formatUptime(service.start_time ?? "")}</span>
+                                : " Not working"
                             }
                           </div>
                         </div>
@@ -168,7 +179,7 @@ const Services: React.FC = () => {
                         {service.ram_bytes && service.ram_usage && (
                           <div className="mt-3">
                             <div className="h-1.5 bg-gray-600 rounded-full overflow-hidden">
-                              <div 
+                              <div
                                 className="h-full bg-sky-500 transition-all duration-500"
                                 style={{ width: `${(service.ram_usage / service.ram_bytes) * 100}%` }}
                               />
