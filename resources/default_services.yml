@@ -14,10 +14,10 @@ services:
   #   workdir: "./host/mcserver" # Where you wanna run this script.
   #   # Script to start the service. Make sure to not use shellscripts for that.
   #   # Because It's not safe if it's located in host folder.
-  #   script: "java -Xmx4G -jar paper-1.21.11-116.jar nogui"
+  #   script: "java -Xmx4G -jar server.jar nogui"
   #   ram: "4 GB" # RAM Limit. You can also use MB values like 720 MB etc.
   #   auto_start: true # Auto start with folderhost
-  #   auto_restart: false # Do you want auto restart after crach or something?
+  #   auto_restart: false # Do you want auto restart after crash or something?
   #   allow_executing_commands: true # You can disable it for security.
   #   users: # users that are not listed here can't even see them.
   #   - username: "mertjs"
