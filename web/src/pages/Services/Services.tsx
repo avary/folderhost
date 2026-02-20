@@ -6,13 +6,14 @@ import {
 import { FaServer, FaClock } from "react-icons/fa";
 import { FaScrewdriverWrench } from "react-icons/fa6";
 import axiosInstance from '../../utils/axiosInstance';
-import { type Service } from "../../types/Service";
-import { formatUptime } from "../../utils/formatUptime";
 import MessageBox from "../../components/minimal/MessageBox/MessageBox";
+import moment from "moment";
+import { type ServiceStatus } from "../../types/ServiceStatus";
+import convertToBytes from "../../utils/convertToBytes";
 
 const Services: React.FC = () => {
   const navigate = useNavigate();
-  const [services, setServices] = useState<Service[]>([]);
+  const [services, setServices] = useState<ServiceStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -43,7 +44,7 @@ const Services: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'running': return 'text-emerald-500 bg-emerald-500/90';
-      case 'stopped': return 'text-rose-500 bg-rose-500/10';
+      case 'stopped': return 'text-rose-500 bg-rose-500/90';
       case 'starting': case 'stopping': return 'text-amber-500 bg-amber-500/10';
       default: return 'text-slate-500 bg-slate-500/10';
     }
@@ -112,7 +113,15 @@ const Services: React.FC = () => {
                   <p className="text-sm mt-2">Add services to services.yml to get started</p>
                 </div>
               ) : (
-                services.map((service) => {
+                services.sort((a, b) => {
+                  if (a.name < b.name) {
+                    return -1
+                  }
+                  if (a.name > b.name) {
+                    return 1
+                  }
+                  return 0
+                }).map((service, index) => {
                   const statusColor = getStatusColor(service.status);
                   
                   return (
@@ -127,8 +136,8 @@ const Services: React.FC = () => {
                               {getStatusIcon(service.status)}
                             </div>
                             <div>
-                              <h3 className="text-lg font-semibold text-white">{service.title}</h3>
-                              <p className="text-sm text-gray-400">{service.name}</p>
+                              <h3 className="text-lg font-semibold text-white">{service.name}</h3>
+                              <p className="text-sm text-gray-400">Service: {index+1}</p>
                               {service.pid && (
                                 <p className="text-xs text-gray-500 mt-1">PID: {service.pid}</p>
                               )}
@@ -141,13 +150,17 @@ const Services: React.FC = () => {
                             <MdMemory className="text-gray-400 w-4 h-4" />
                             RAM:
                             <span className="text-gray-300">
-                              {service.ram_usage_str || '0 B'} / {service.ram}
+                              {service.ram_usage_str || '0 B'} / {convertToBytes(service.ram) > 0 ? service.ram : "Unlimited"}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <FaClock className="text-gray-400 w-4 h-4" />
                             Uptime:
-                            <span className="text-gray-300">{formatUptime(service.uptime)}</span>
+                            {
+                              service.status == "running" ?
+                              <span className="text-gray-300">{moment.utc(moment.duration(moment().diff(moment(service.start_time))).asMilliseconds()).format("HH[h] mm[m] ss[s]")}</span>
+                              : " Not working"
+                            }
                           </div>
                         </div>
 
