@@ -2,6 +2,7 @@ package serviceutils
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,9 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+
+	"github.com/MertJSX/folderhost/utils"
+	"github.com/gofiber/fiber/v2"
 )
 
 var GlobalServiceManager *ServiceManager
@@ -97,9 +101,23 @@ func (lb *LogBuffer) Write(p []byte) (n int, err error) {
 		}
 
 		lb.Lines = append(lb.Lines, line)
+
+		NewServiceLog(lb.ServiceName, line)
 	}
 
 	return len(p), nil
+}
+
+func NewServiceLog(serviceName string, logStr string) {
+	newLog, err := json.Marshal(fiber.Map{
+		"type":        "new-log",
+		"data":        logStr,
+		"serviceName": serviceName,
+	})
+
+	if err == nil {
+		utils.SendToAll(fmt.Sprintf("!service-%s", serviceName), 1, newLog)
+	}
 }
 
 func (lb *LogBuffer) GetLines() []string {
