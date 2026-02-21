@@ -30,6 +30,7 @@ const ServiceManager: React.FC = () => {
   const [command, setCommand] = useState("");
   const [uptimeString, setUptimeString] = useState("");
   const [shouldConnect, setShouldConnect] = useState<boolean>(false);
+  const lastProcessedIndex = useRef<number>(0);
 
   const {
     isConnectedRef,
@@ -58,17 +59,25 @@ const ServiceManager: React.FC = () => {
   useEffect(() => {
     if (!isConnectedRef.current || messages.length === 0) return;
 
-    try {
-      const message: ServiceWSLog = JSON.parse(messages[messages.length - 1] ?? "");
+    const newMessages = messages.slice(lastProcessedIndex.current);
+    lastProcessedIndex.current = messages.length;
 
-      if (message.type === "new-log") {
-        setLogs((old) => [...old, message.data]);
-      }
-    } catch (err) {
-      console.warn("Failed to parse WebSocket message:", messages[messages.length - 1]);
-      console.error(err);
+    const newLogs: string[] = [];
+    for (const raw of newMessages) {
+        try {
+            const message: ServiceWSLog = JSON.parse(raw ?? "");
+            if (message.type === "new-log") {
+                newLogs.push(message.data);
+            }
+        } catch (err) {
+            console.warn("Failed to parse WebSocket message:", raw);
+        }
     }
-  }, [messages, isConnectedRef]);
+
+    if (newLogs.length > 0) {
+        setLogs((old) => [...old, ...newLogs]);
+    }
+}, [messages]);
 
   const fetchServiceData = useCallback(async () => {
     if (!serviceName) return;
