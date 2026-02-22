@@ -7,7 +7,7 @@ import {
 import { FaServer, FaClock, FaArrowLeft } from "react-icons/fa";
 import axiosInstance from '../../utils/axiosInstance';
 import MessageBox from "../../components/minimal/MessageBox/MessageBox";
-import { parseAnsi } from "../../utils/ansiExcapeCodeParser";
+import { parseAnsi } from "../../utils/ansiEscapeCodeParser";
 import { type ServiceStatus } from "../../types/ServiceStatus";
 import { type ServicePermissions } from "../../types/ServicePermissions";
 import useWebSocket from '../../utils/useWebSocket.js';
@@ -25,7 +25,6 @@ const ServiceManager: React.FC = () => {
   const [logs, setLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
-  const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [command, setCommand] = useState("");
   const [uptimeString, setUptimeString] = useState("");
@@ -52,7 +51,7 @@ const ServiceManager: React.FC = () => {
     const st: string = service.start_time
 
     setUptimeString(formatUptime(st));
-    const uptimeInterval = setInterval(() => {setUptimeString(formatUptime(st))}, 1000);
+    const uptimeInterval = setInterval(() => { setUptimeString(formatUptime(st)) }, 1000);
     return () => clearInterval(uptimeInterval);
   }, [service?.start_time, service?.status]);
 
@@ -64,20 +63,29 @@ const ServiceManager: React.FC = () => {
 
     const newLogs: string[] = [];
     for (const raw of newMessages) {
-        try {
-            const message: ServiceWSLog = JSON.parse(raw ?? "");
-            if (message.type === "new-log") {
-                newLogs.push(message.data);
-            }
-        } catch (err) {
-            console.warn("Failed to parse WebSocket message:", raw);
+      try {
+        const message: ServiceWSLog = JSON.parse(raw ?? "");
+        if (message.type === "new-log") {
+          newLogs.push(message.data);
         }
+      } catch (err) {
+        console.warn("Failed to parse WebSocket message:", raw);
+      }
     }
 
     if (newLogs.length > 0) {
-        setLogs((old) => [...old, ...newLogs]);
+      setLogs((old) => {
+        const MAX_LOGS = 1000;
+        const updatedLogs = [...old, ...newLogs];
+
+        if (updatedLogs.length > MAX_LOGS) {
+          return updatedLogs.slice(updatedLogs.length - MAX_LOGS);
+        }
+
+        return updatedLogs;
+      });
     }
-}, [messages]);
+  }, [messages]);
 
   const fetchServiceData = useCallback(async () => {
     if (!serviceName) return;
@@ -99,12 +107,11 @@ const ServiceManager: React.FC = () => {
         }
       }
 
-      setError("");
     } catch (err: any) {
       if (err.response?.status === 403) {
-        setError("You don't have permission to view this service");
+        setMessage("You don't have permission to view this service")
       } else {
-        setError(err.response?.data?.err || "Failed to load service data");
+        setMessage(err.response?.data?.err || "Failed to load service data");
       }
     } finally {
       setLoading(false);
@@ -128,11 +135,11 @@ const ServiceManager: React.FC = () => {
     const decodedName = decodeURIComponent(serviceName);
 
     if (action === "start" && !permissions.start) {
-      setError("You don't have permission to start this service");
+      setMessage("You don't have permission to start this service");
       return;
     }
     if (action === "stop" && !permissions.stop) {
-      setError("You don't have permission to stop this service");
+      setMessage("You don't have permission to stop this service");
       return;
     }
 
@@ -152,7 +159,7 @@ const ServiceManager: React.FC = () => {
 
       setTimeout(fetchServiceData, 1000);
     } catch (err: any) {
-      setError(err.response?.data?.err || `Failed to ${action} service`);
+      setMessage(err.response?.data?.err || `Failed to ${action} service`);
     } finally {
       setActionLoading(false);
     }
@@ -171,7 +178,7 @@ const ServiceManager: React.FC = () => {
 
       setCommand("");
     } catch (err: any) {
-      setError(err.response?.data?.err || "Failed to send command");
+      setMessage(err.response?.data?.err || "Failed to send command");
     }
   };
 
@@ -224,7 +231,7 @@ const ServiceManager: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-120px)] bg-slate-900">
-      <MessageBox message={error || message} isErr={!!error} setMessage={setMessage} />
+      <MessageBox message={message} isErr={true} setMessage={setMessage} />
 
       <main className="mt-10">
         <div className="flex flex-col items-center px-6">
@@ -336,21 +343,28 @@ const ServiceManager: React.FC = () => {
 
             {/* Terminal */}
             <div className="flex-1 flex flex-col min-h-0">
-              <div className="flex items-center gap-2 mb-2">
-                <MdTerminal className="text-gray-400" />
-                <h2 className="text-lg font-semibold text-white">Terminal</h2>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 mb-2">
+                  <MdTerminal className="text-gray-400" />
+                  <h2 className="text-lg font-semibold text-white">Terminal</h2>
+                </div>
+                <h2 className="text-sm italic text-gray-400">{logs ? logs.length : 0} Lines</h2>
+
               </div>
 
               {/* Logs */}
               <div
                 ref={terminalRef}
-                className="flex-1 bg-gray-950 rounded-lg p-4 font-mono text-sm overflow-y-auto min-h-[300px] max-h-[400px]"
+                className="flex-1 bg-gray-950 rounded-lg p-4 text-sm overflow-y-auto min-h-[300px] max-h-[400px] terminal"
               >
                 {permissions?.read_logs ? (
                   logs.length > 0 ? (
                     logs.map((log, index) => (
-                      <div key={`${index}-${log.substring(0, 20)}`} className="py-0.5 border-b border-gray-800/50 last:border-0 font-sans">
-                        <span className="text-gray-500 mr-2 select-none">{`>`}</span>
+                      <div
+                        key={`${index}-${log.substring(0, 20)}`}
+                        className="py-0.5 border-b border-gray-800/50 last:border-0 terminal-font"
+                      >
+                        <span className="text-gray-500 mr-2 select-none terminal-font">{`>`}</span>
                         {parseAnsi(log)}
                       </div>
                     ))
