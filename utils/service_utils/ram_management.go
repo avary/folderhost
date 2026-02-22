@@ -13,44 +13,6 @@ import (
 	"github.com/MertJSX/folderhost/utils"
 )
 
-func (sm *ServiceManager) GetServiceRAMUsage(name string) (int64, error) {
-	sm.Mu.RLock()
-	service, exists := sm.Services[name]
-	sm.Mu.RUnlock()
-
-	if !exists {
-		return 0, fmt.Errorf("can't find service")
-	}
-
-	service.mu.RLock()
-	defer service.mu.RUnlock()
-
-	if service.Status != "running" || service.PID == 0 {
-		return 0, nil
-	}
-
-	return getProcessRAM(service.PID)
-}
-
-func (sm *ServiceManager) GetServiceRAMUsageWithTree(name string) (int64, error) {
-	sm.Mu.RLock()
-	service, exists := sm.Services[name]
-	sm.Mu.RUnlock()
-
-	if !exists {
-		return 0, fmt.Errorf("can't find service")
-	}
-
-	service.mu.RLock()
-	defer service.mu.RUnlock()
-
-	if service.Status != "running" || service.PID == 0 {
-		return 0, nil
-	}
-
-	return getProcessTreeRAM(service.PID)
-}
-
 func getProcessRAM(pid int) (int64, error) {
 	switch runtime.GOOS {
 	case "linux":
@@ -66,7 +28,23 @@ func getProcessRAM(pid int) (int64, error) {
 		return rss * int64(os.Getpagesize()), nil
 
 	case "windows":
-		cmd := exec.Command("powershell", fmt.Sprintf("(Get-Process -Id %d).WorkingSet", pid))
+		cmd := exec.Command("powershell", "-Command", fmt.Sprintf(`
+			$total = 0
+			$pids = [System.Collections.Generic.Queue[int]]::new()
+			$pids.Enqueue(%d)
+			$visited = @{}
+			while ($pids.Count -gt 0) {
+				$current = $pids.Dequeue()
+				if ($visited[$current]) { continue }
+				$visited[$current] = $true
+				try {
+					$p = Get-Process -Id $current -ErrorAction Stop
+					$total += $p.WorkingSet64
+					Get-CimInstance Win32_Process -Filter "ParentProcessId=$current" | ForEach-Object { $pids.Enqueue($_.ProcessId) }
+				} catch {}
+			}
+			$total
+		`, pid))
 		out, _ := cmd.Output()
 		return strconv.ParseInt(strings.TrimSpace(string(out)), 10, 64)
 
@@ -82,27 +60,33 @@ func getProcessRAM(pid int) (int64, error) {
 }
 
 func getProcessTreeRAM(pid int) (int64, error) {
-	var total int64
-	visited := make(map[int]bool)
+	switch runtime.GOOS {
+	case "windows":
+		return getProcessRAM(pid)
 
-	var walk func(int)
-	walk = func(p int) {
-		if visited[p] {
-			return
-		}
-		visited[p] = true
+	default:
+		var total int64
+		visited := make(map[int]bool)
 
-		if ram, err := getProcessRAM(p); err == nil {
-			total += ram
+		var walk func(int)
+		walk = func(p int) {
+			if visited[p] {
+				return
+			}
+			visited[p] = true
+
+			if ram, err := getProcessRAM(p); err == nil {
+				total += ram
+			}
+
+			for _, child := range getChildPIDs(p) {
+				walk(child)
+			}
 		}
 
-		for _, child := range getChildPIDs(p) {
-			walk(child)
-		}
+		walk(pid)
+		return total, nil
 	}
-
-	walk(pid)
-	return total, nil
 }
 
 func getChildPIDs(pid int) []int {
@@ -131,17 +115,6 @@ func getChildPIDs(pid int) []int {
 					}
 					break
 				}
-			}
-		}
-	}
-
-	if runtime.GOOS == "windows" {
-		cmd := exec.Command("wmic", "process", "where", fmt.Sprintf("ParentProcessId=%d", pid), "get", "ProcessId")
-		out, _ := cmd.Output()
-		for _, line := range strings.Split(string(out), "\n")[1:] {
-			p, _ := strconv.Atoi(strings.TrimSpace(line))
-			if p > 0 {
-				children = append(children, p)
 			}
 		}
 	}
@@ -191,9 +164,6 @@ func (sm *ServiceManager) StartMonitoring(name string) {
 		HardLimit: service.Config.RAMBytes,
 	}
 
-	// log.Printf("RAM watching started: %s (Soft: %d%%, Hard: %d%%)",
-	// 	name, 80, 100)
-
 	go func() {
 		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
@@ -207,19 +177,10 @@ func (sm *ServiceManager) StartMonitoring(name string) {
 			service.mu.RUnlock()
 
 			usage, err := getProcessTreeRAM(limiter.PID)
-
 			if err != nil {
 				log.Printf("Error checking RAM usage of service: %s", name)
 				continue
 			}
-
-			// if usage > limiter.SoftLimit {
-			// 	log.Printf("Warning: %s RAM limit warning: %s / %s (Soft Limit: %s)",
-			// 		name,
-			// 		utils.ConvertBytesToString(usage),
-			// 		service.Config.RAM,
-			// 		utils.ConvertBytesToString(limiter.SoftLimit))
-			// }
 
 			if usage > limiter.HardLimit {
 				log.Printf("Stopping Service: %s RAM Limit Exceeded! Usage: %s / Limit: %s",
