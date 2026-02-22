@@ -1,6 +1,7 @@
 package serviceutils
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log"
@@ -14,6 +15,7 @@ import (
 	"time"
 
 	"github.com/MertJSX/folderhost/utils"
+	"github.com/creack/pty"
 	"github.com/stretchr/testify/assert/yaml"
 )
 
@@ -153,14 +155,13 @@ func (sm *ServiceManager) ListServices() []ServiceStatus {
 		}
 
 		if service.Status == "running" {
-			usage, err := getProcessRAM(service.PID)
+			usage, err := getProcessTreeRAM(service.PID)
 			if err == nil {
 				status.RAMUsage = usage
 				status.RAMUsageStr = utils.ConvertBytesToString(usage)
 			} else {
 				status.RAMUsage = 0
 				status.RAMUsageStr = "N/A"
-				// log.Printf("RAM read error %s: %v", name, err)
 			}
 		}
 
@@ -201,19 +202,18 @@ outerLoop:
 		}
 
 		if service.Status == "running" {
-			usage, err := getProcessRAM(service.PID)
+			usage, err := getProcessTreeRAM(service.PID)
 			if err == nil {
 				status.RAMUsage = usage
 				status.RAMUsageStr = utils.ConvertBytesToString(usage)
 			} else {
 				status.RAMUsage = 0
 				status.RAMUsageStr = "N/A"
-				// log.Printf("RAM read error %s: %v", name, err)
 			}
 		}
 
 		serviceStatuses = append(serviceStatuses, status)
-		defer service.mu.RUnlock()
+		service.mu.RUnlock()
 	}
 
 	return serviceStatuses
@@ -290,8 +290,8 @@ func (sm *ServiceManager) GetServiceStatus(name string) (ServiceStatus, error) {
 	defer service.mu.RUnlock()
 
 	var ramUsage int64
-	if service.Status == "running" {
-		ramUsage, _ = sm.GetServiceRAMUsage(name)
+	if service.Status == "running" && service.PID > 0 {
+		ramUsage, _ = getProcessTreeRAM(service.PID)
 	}
 
 	return ServiceStatus{
@@ -326,7 +326,7 @@ func (sm *ServiceManager) StartService(name string) error {
 
 	service.LogBuffer = &LogBuffer{
 		Lines:    make([]string, 0),
-		MaxLines: 200,
+		MaxLines: 1000,
 	}
 
 	var cmd *exec.Cmd
@@ -347,35 +347,89 @@ func (sm *ServiceManager) StartService(name string) error {
 		cmd.Dir = sm.WorkingDir
 	}
 
-	cmd.Stdout = service.LogBuffer
-	cmd.Stderr = service.LogBuffer
 	service.LogBuffer.ServiceName = service.Config.Title
-	service.LogBuffer.Workdir = service.Config.Workdir
+	service.LogBuffer.UsePTY = service.Config.UsePTY
 
-	if service.Config.AllowExecutingCommands {
-		stdin, err := cmd.StdinPipe()
+	if !service.Config.UsePTY {
+		cmd.Stdout = service.LogBuffer
+		cmd.Stderr = service.LogBuffer
 
-		if err != nil {
-			log.Printf("can't create stdin pipe (can't execute commands): %v", err)
-		} else {
-			service.Stdin = stdin
+		if service.Config.AllowExecutingCommands {
+			stdin, err := cmd.StdinPipe()
+			if err != nil {
+				log.Printf("can't create stdin pipe: %v", err)
+			} else {
+				service.Stdin = stdin
+			}
 		}
 	}
 
-	if runtime.GOOS != "windows" {
-		cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
-	}
+	workDir := cmd.Dir
 
-	err := cmd.Start()
-	if err != nil {
-		return fmt.Errorf("can't start service: %v", err)
-	}
+	setProcessAttributes(cmd)
 
-	service.CMD = cmd
-	service.Status = "running"
-	service.StartTime = time.Now()
-	service.PID = cmd.Process.Pid
-	service.WorkDir = cmd.Dir
+	if service.Config.UsePTY {
+
+		wrappedScript := fmt.Sprintf("script -q -c '%s' /dev/null", service.Config.Script)
+		if runtime.GOOS == "linux" {
+			cmd = exec.CommandContext(sm.Ctx, "sh", "-c", wrappedScript)
+		}
+
+		cmd.Dir = workDir
+
+		cmd.Stdout = service.LogBuffer
+		cmd.Stderr = service.LogBuffer
+
+		ptmx, err := pty.Start(cmd)
+		if err != nil {
+			return fmt.Errorf("can't start service with PTY: %v", err)
+		}
+
+		service.CMD = cmd
+		service.Status = "running"
+		service.StartTime = time.Now()
+		service.PID = cmd.Process.Pid
+		service.WorkDir = cmd.Dir
+
+		if service.Config.AllowExecutingCommands {
+			service.Stdin = ptmx
+		}
+
+		go func() {
+			buf := make([]byte, 8192)
+			var pending []byte
+
+			for {
+				n, err := ptmx.Read(buf)
+				if n > 0 {
+					pending = append(pending, buf[:n]...)
+
+					if bytes.Contains(pending, []byte("\n")) {
+						service.LogBuffer.Write(pending)
+						pending = pending[:0]
+					}
+				}
+				if err != nil {
+					if len(pending) > 0 {
+						service.LogBuffer.Write(pending)
+					}
+					break
+				}
+			}
+			ptmx.Close()
+		}()
+
+	} else {
+		err := cmd.Start()
+		if err != nil {
+			return fmt.Errorf("can't start service: %v", err)
+		}
+		service.CMD = cmd
+		service.Status = "running"
+		service.StartTime = time.Now()
+		service.PID = cmd.Process.Pid
+		service.WorkDir = cmd.Dir
+	}
 
 	if service.Config.RAMBytes > 0 {
 		log.Printf("Service started: %s (PID: %d) - RAM: %s", name, cmd.Process.Pid, service.Config.RAM)
@@ -399,7 +453,6 @@ func (sm *ServiceManager) monitorService(name string, service *ManagedService) {
 	defer service.mu.Unlock()
 
 	if service.Status == "stopped" {
-		// log.Printf("Service already stopped: %s", name)
 		return
 	}
 
