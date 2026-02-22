@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  MdStop, MdRefresh, MdCheckCircle, MdError, MdSchedule, MdMemory
-} from "react-icons/md";
+import {MdRefresh, MdMemory} from "react-icons/md";
 import { FaServer, FaClock } from "react-icons/fa";
 import { FaScrewdriverWrench } from "react-icons/fa6";
 import axiosInstance from '../../utils/axiosInstance';
 import MessageBox from "../../components/minimal/MessageBox/MessageBox";
 import { type ServiceStatus } from "../../types/ServiceStatus";
-import convertToBytes from "../../utils/convertToBytes";
 import { formatUptime } from "../../utils/formatUptime";
 import { getStatusColor, getStatusIcon, formatRam } from "../../utils/serviceUtils";
 
