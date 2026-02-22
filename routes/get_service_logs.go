@@ -47,7 +47,7 @@ func GetServiceLogs(c *fiber.Ctx) error {
 		)
 	}
 
-	logs, err := serviceutils.GlobalServiceManager.GetServiceLogs(serviceName, 200)
+	logs, err := serviceutils.GlobalServiceManager.GetServiceLogs(serviceName, 1000)
 
 	if err != nil {
 		return c.Status(500).JSON(
