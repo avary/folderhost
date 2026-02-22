@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  MdPlayArrow, MdStop, MdRefresh, MdMemory,
-  MdCheckCircle, MdError, MdSchedule, MdTerminal, MdSend
+  MdPlayArrow, MdStop, MdRefresh, MdMemory, MdTerminal, MdSend
 } from "react-icons/md";
 import { FaServer, FaClock, FaArrowLeft } from "react-icons/fa";
 import axiosInstance from '../../utils/axiosInstance';
@@ -12,8 +11,8 @@ import { type ServiceStatus } from "../../types/ServiceStatus";
 import { type ServicePermissions } from "../../types/ServicePermissions";
 import useWebSocket from '../../utils/useWebSocket.js';
 import { type ServiceWSLog } from "../../types/ServiceWSLog";
-import convertToBytes from "../../utils/convertToBytes";
 import { formatUptime } from "../../utils/formatUptime";
+import { getStatusColor, getStatusIcon, formatRam } from "../../utils/serviceUtils";
 
 const ServiceManager: React.FC = () => {
   const { service: serviceName } = useParams<{ service: string }>();
@@ -182,28 +181,6 @@ const ServiceManager: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'running': return 'bg-emerald-500';
-      case 'stopped': return 'bg-rose-500';
-      case 'starting':
-      case 'stopping':
-        return 'bg-amber-500';
-      default: return 'text-slate-500';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'running': return <MdCheckCircle className="w-6 h-6" />;
-      case 'stopped': return <MdStop className="w-6 h-6" />;
-      case 'starting':
-      case 'stopping':
-        return <MdSchedule className="w-6 h-6 animate-spin" />;
-      default: return <MdError className="w-6 h-6" />;
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-120px)] bg-slate-900 flex items-center justify-center">
@@ -317,7 +294,7 @@ const ServiceManager: React.FC = () => {
                 <div className="text-sm text-gray-400 mb-1">Memory Usage</div>
                 <div className="flex items-center gap-2 text-white">
                   <MdMemory className="text-gray-400" />
-                  <span>{service.ram_usage_str || '0 B'} / {convertToBytes(service.ram) > 0 ? service.ram : "Unlimited"}</span>
+                  <span>{formatRam(service)}</span>
                 </div>
                 {service.ram_bytes && service.ram_usage && (
                   <div className="mt-2">

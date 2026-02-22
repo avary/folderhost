@@ -10,6 +10,7 @@ import MessageBox from "../../components/minimal/MessageBox/MessageBox";
 import { type ServiceStatus } from "../../types/ServiceStatus";
 import convertToBytes from "../../utils/convertToBytes";
 import { formatUptime } from "../../utils/formatUptime";
+import { getStatusColor, getStatusIcon, formatRam } from "../../utils/serviceUtils";
 
 const Services: React.FC = () => {
   const navigate = useNavigate();
@@ -57,24 +58,6 @@ const Services: React.FC = () => {
     } finally {
       setLoading(false);
       setRefreshing(false);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'running': return 'text-emerald-500 bg-emerald-500/90';
-      case 'stopped': return 'text-rose-500 bg-rose-500/90';
-      case 'starting': case 'stopping': return 'text-amber-500 bg-amber-500/10';
-      default: return 'text-slate-500 bg-slate-500/10';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'running': return <MdCheckCircle className="w-6 h-6" />;
-      case 'stopped': return <MdStop className="w-6 h-6" />;
-      case 'starting': case 'stopping': return <MdSchedule className="w-6 h-6 animate-spin" />;
-      default: return <MdError className="w-4 h-4" />;
     }
   };
 
@@ -161,7 +144,7 @@ const Services: React.FC = () => {
                             <MdMemory className="text-gray-400 w-4 h-4" />
                             RAM:
                             <span className="text-gray-300">
-                              {service.ram_usage_str || '0 B'} / {convertToBytes(service.ram) > 0 ? service.ram : "Unlimited"}
+                              {formatRam(service)}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
