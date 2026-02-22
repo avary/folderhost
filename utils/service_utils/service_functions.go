@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -32,10 +33,6 @@ func NewServiceManager() *ServiceManager {
 		Cancel:     cancel,
 		WorkingDir: workingDir,
 	}
-}
-
-type ProcessKiller struct {
-	pid int
 }
 
 func KillProcess(pid int) error {
@@ -64,35 +61,63 @@ func TerminateProcess(pid int) error {
 	}
 }
 
-func killProcessTree(pid int) error {
-	switch runtime.GOOS {
-	case "windows":
-		cmd := exec.Command("taskkill", "/F", "/T", "/PID", strconv.Itoa(pid))
-		return cmd.Run()
-	case "linux", "darwin":
-		pgid, err := syscall.Getpgid(pid)
-		if err != nil {
-			process, err := os.FindProcess(pid)
-			if err != nil {
-				return err
-			}
-			return process.Kill()
-		}
-		return syscall.Kill(-pgid, syscall.SIGKILL)
-	default:
-		return fmt.Errorf("unsupported platform")
+var ansiColorRegex = regexp.MustCompile(`\x1b\[[0-9;]*m`)
+
+var ansiEscapeRegex = regexp.MustCompile(
+	`\x1b\[[0-9;]*[ABCDEFGHJKLMPSTfhilnrsu]` +
+		`|\x1b\][^\x07\x1b]*[\x07\x1b]` +
+		`|\][0-9]+;[^\\\n]*\\` +
+		`|\[\?[0-9]+[hl]`,
+)
+
+func stripControlSequences(s string) string {
+	colors := ansiColorRegex.FindAllString(s, -1)
+	placeholders := make([]string, len(colors))
+	for i, c := range colors {
+		placeholders[i] = fmt.Sprintf("\x00COLOR%d\x00", i)
+		s = strings.Replace(s, c, placeholders[i], 1)
 	}
+
+	s = ansiEscapeRegex.ReplaceAllString(s, "")
+	s = strings.ReplaceAll(s, "\x1b", "")
+
+	for i, p := range placeholders {
+		s = strings.Replace(s, p, colors[i], 1)
+	}
+
+	return s
 }
 
 func (lb *LogBuffer) Write(p []byte) (n int, err error) {
 	lb.mu.Lock()
-	defer lb.mu.Unlock()
 
 	content := string(p)
+
+	if lb.UsePTY {
+		content = stripControlSequences(content)
+	}
+
+	content = strings.ReplaceAll(content, "\r\n", "\n")
+
+	if !strings.Contains(content, "\n") && strings.Contains(content, "\r") {
+		parts := strings.Split(content, "\r")
+		content = parts[len(parts)-1]
+	} else {
+		content = strings.ReplaceAll(content, "\r", "\n")
+	}
+
 	lines := strings.Split(content, "\n")
 
+	var toSend []string
+
 	for _, line := range lines {
-		if line == "" {
+		line = strings.TrimSpace(line)
+		if line == "" || line == "\\" || line == "\\\\" {
+			continue
+		}
+
+		trimmed := strings.Trim(line, "\\")
+		if trimmed == "" {
 			continue
 		}
 
@@ -101,8 +126,14 @@ func (lb *LogBuffer) Write(p []byte) (n int, err error) {
 		}
 
 		lb.Lines = append(lb.Lines, line)
+		toSend = append(toSend, line)
+	}
 
-		NewServiceLog(lb.ServiceName, line)
+	serviceName := lb.ServiceName
+	lb.mu.Unlock()
+
+	for _, line := range toSend {
+		NewServiceLog(serviceName, line)
 	}
 
 	return len(p), nil
