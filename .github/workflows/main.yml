@@ -15,19 +15,10 @@ on:
         description: 'Custom version (optional, format: vYY.MM.PATCH)'
         required: false
         type: string
-      release_notes:
-        description: 'Release notes (markdown format) - What changed in this release?'
-        required: true
+      release_notes_override:
+        description: 'Release notes override (optional, leave empty to auto-read from CHANGELOG.md)'
+        required: false
         type: string
-        default: |
-          ### Added
-          - 
-
-          ### Changed
-          - 
-
-          ### Fixed
-          - 
 
 env:
   BINARY_NAME: folderhost
@@ -39,6 +30,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       current_date: ${{ steps.date.outputs.current_date }}
+      release_notes: ${{ steps.changelog.outputs.release_notes }}
     
     steps:
     - name: Checkout code
@@ -102,6 +94,39 @@ jobs:
 
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "✅ Final version: $VERSION"
+
+    - name: Extract release notes from CHANGELOG.md
+      id: changelog
+      run: |
+        if [[ -n "${{ github.event.inputs.release_notes_override }}" ]]; then
+          echo "📝 Using manually provided release notes"
+          NOTES="${{ github.event.inputs.release_notes_override }}"
+        elif [[ ! -f "CHANGELOG.md" ]]; then
+          echo "⚠️ CHANGELOG.md not found, using default notes"
+          NOTES="No changelog available."
+        else
+          echo "📖 Reading release notes from CHANGELOG.md [Unreleased] section"
+
+          NOTES=$(awk '
+            /^## \[Unreleased\]/ { found=1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md | sed '/^[[:space:]]*$/{ /./!d }' | sed '1{/^$/d}')
+
+          if [[ -z "$NOTES" ]]; then
+            echo "⚠️ [Unreleased] section is empty, using default notes"
+            NOTES="No unreleased changes documented."
+          else
+            echo "✅ Successfully extracted changelog notes"
+          fi
+        fi
+
+        echo "$NOTES" > /tmp/release_notes.txt
+        {
+          echo "release_notes<<CHANGELOG_EOF"
+          cat /tmp/release_notes.txt
+          echo "CHANGELOG_EOF"
+        } >> $GITHUB_OUTPUT
 
     - name: Get current date
       id: date
@@ -236,7 +261,7 @@ jobs:
           📅 Release Date: ${{ needs.build-and-release.outputs.current_date }}
           
           ## 📋 What's New
-          ${{ github.event.inputs.release_notes }}
+          ${{ needs.build-and-release.outputs.release_notes }}
           
           ## 📦 Downloads
           
