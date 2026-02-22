@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [v26.2.0]
 
 ## Added
 
@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file.
 
 - Module name: github.com/MertJSX/folder-host-go -> github.com/MertJSX/folderhost
 
-## [25.12.5] - 2025-12-19
+## [v25.12.5] - 2025-12-19
 
 ### Added
 
@@ -48,7 +48,7 @@ All notable changes to this project will be documented in this file.
 - Unused UI components in OptionsBar directory.
 
 
-## [25.12.4] - 2025-12-15
+## [v25.12.4] - 2025-12-15
 
 ### Added
 
