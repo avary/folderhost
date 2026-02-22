@@ -9,9 +9,8 @@
 enable_services: false # Don't forget to enable it if you're going to use them.
 services:
   # # Here are some example services. You can also create your own service.
-  # 
   # - title: "Minecraft Server" 
-  #   workdir: "./host/mcserver" # Where you wanna run this script.
+  #   workdir: "./host/mcserver" # Where you want to run this script.
   #   # Script to start the service. Make sure to not use shellscripts for that.
   #   # Because It's not safe if it's located in host folder.
   #   script: "java -Xmx4G -jar server.jar nogui"
@@ -19,24 +18,28 @@ services:
   #   auto_start: true # Auto start with folderhost
   #   auto_restart: false # Do you want auto restart after crash or something?
   #   allow_executing_commands: true # You can disable it for security.
+  #   # UsePTY Linux only: Enables pseudo-terminal for interactive apps.
+  #   # Required for terminal features to work properly.
+  #   use_pty: false
   #   users: # users that are not listed here can't even see them.
-  #   - username: "mertjs"
+  #   - username: "admin"
   #     permissions: # user permissions
   #       start: true
   #       stop: true
   #       read_logs: true
   #       execute_commands: true
-  #
-  # # Here is an another example
+  
+  # # Here is an another example with php webserver.
   # - title: "Web Server"
   #   workdir: "./host/mywebsite"
-  #   script: "http-server"
+  #   script: "php -S 0.0.0.0:8080"
   #   ram: "0 GB" # 0 means unlimited.
   #   auto_start: true
   #   auto_restart: false
   #   allow_executing_commands: false
+  #   use_pty: false # Linux only: You can try it. Sometimes your service can work better with that enabled.
   #   users:
-  #   - username: "mertjs"
+  #   - username: "admin"
   #     permissions:
   #       start: true
   #       stop: true
