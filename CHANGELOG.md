@@ -6,7 +6,20 @@ All notable changes to this project will be documented in this file.
 
 ## Added
 
+- **Services** (BETA):
+  With this update you can create your own services. For example: Minecraft Server, Web Server etc. Features are:
+  - Special configurations for services.
+  - Added functions like auto_start and auto_restart.
+  - Real-time terminal with WebSocket for your service.
+  - Read logs and send commands to your service using web interface.
+  - User permissions for services (start, stop, read_logs and execute_commands).
+  - Service RAM limits.
+  - Windows and Linux support.
 - File Explorer: Another button to upload your files on current directory.
+
+### Changed
+
+- Module name: github.com/MertJSX/folder-host-go -> github.com/MertJSX/folderhost
 
 ## [25.12.5] - 2025-12-19
 
