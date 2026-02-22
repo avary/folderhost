@@ -23,6 +23,7 @@ type Service struct {
 	AutoRestart            bool           `yaml:"auto_restart"`
 	AllowExecutingCommands bool           `yaml:"allow_executing_commands"`
 	Users                  []ServiceUsers `yaml:"users"`
+	UsePTY                 bool           `yaml:"use_pty"`
 }
 
 type ServiceUsers struct {
@@ -73,16 +74,14 @@ type ServiceStatus struct {
 
 type LogBuffer struct {
 	ServiceName string
-	Workdir     string
+	UsePTY      bool
 	Lines       []string
 	MaxLines    int
 	mu          sync.RWMutex
 }
 
 type SoftLimiter struct {
-	PID          int
-	SoftLimit    int64
-	HardLimit    int64
-	WarningCount int
-	LastWarning  time.Time
+	PID       int
+	SoftLimit int64
+	HardLimit int64
 }
