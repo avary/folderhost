@@ -15,6 +15,19 @@ on:
         description: 'Custom version (optional, format: vYY.MM.PATCH)'
         required: false
         type: string
+      release_notes:
+        description: 'Release notes (markdown format) - What changed in this release?'
+        required: true
+        type: string
+        default: |
+          ### Added
+          - 
+
+          ### Changed
+          - 
+
+          ### Fixed
+          - 
 
 env:
   BINARY_NAME: folderhost
@@ -222,6 +235,9 @@ jobs:
           
           📅 Release Date: ${{ needs.build-and-release.outputs.current_date }}
           
+          ## 📋 What's New
+          ${{ github.event.inputs.release_notes }}
+          
           ## 📦 Downloads
           
           | Platform | Download | Description |
@@ -293,7 +309,7 @@ jobs:
           ./release_packages/folderhost-windows-amd64.zip
         draft: false
         prerelease: false
-        generate_release_notes: true
+        generate_release_notes: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
