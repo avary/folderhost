@@ -1,6 +1,9 @@
 package routes
 
 import (
+	"fmt"
+
+	"github.com/MertJSX/folderhost/database/logs"
 	"github.com/MertJSX/folderhost/types"
 	serviceutils "github.com/MertJSX/folderhost/utils/service_utils"
 	"github.com/gofiber/fiber/v2"
@@ -60,6 +63,12 @@ func SendServiceCommand(c *fiber.Ctx) error {
 			},
 		)
 	}
+
+	logs.CreateLog(types.AuditLog{
+		Username:    c.Locals("account").(types.Account).Username,
+		Action:      "Run command",
+		Description: fmt.Sprintf(`%s ran "%s" command in "%s" service.`, c.Locals("account").(types.Account).Username, requestBody.Command, requestBody.Service),
+	})
 
 	return c.Status(200).JSON(
 		fiber.Map{

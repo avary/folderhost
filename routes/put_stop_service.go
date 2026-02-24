@@ -1,8 +1,10 @@
 package routes
 
 import (
+	"fmt"
 	"net/url"
 
+	"github.com/MertJSX/folderhost/database/logs"
 	"github.com/MertJSX/folderhost/types"
 	serviceutils "github.com/MertJSX/folderhost/utils/service_utils"
 	"github.com/gofiber/fiber/v2"
@@ -56,6 +58,12 @@ func StopService(c *fiber.Ctx) error {
 			},
 		)
 	}
+
+	logs.CreateLog(types.AuditLog{
+		Username:    c.Locals("account").(types.Account).Username,
+		Action:      "Stop Service",
+		Description: fmt.Sprintf(`%s stopped "%s" service.`, c.Locals("account").(types.Account).Username, serviceName),
+	})
 
 	return c.Status(200).JSON(
 		fiber.Map{
