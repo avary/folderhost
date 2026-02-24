@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+## Added
+
+- **Service Logs**: Now you can follow user activities related to services.
+
+### Fixed
+
+- **Upload page**: Fixed "Uploading..." text after trying to upload without a selected file. I didn't expect that someone would click the upload button before selecting a file to upload, but I saw my friend doing that and realised that I needed to fix that tiny issue.
+
 ## [v26.2.0] - 2026-02-22
 
 ## Added
