@@ -35,7 +35,6 @@ const UploadFileComp: React.FC<UploadFileCompProps> = ({
                     className='text-center bg-sky-500 text-2xl font-bold'
                     onClick={() => {
                         uploadFile();
-                        setUploading(true);
                     }}
                 >Upload</button> :
                 <div>

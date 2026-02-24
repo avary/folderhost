@@ -35,11 +35,12 @@ const UploadFile = () => {
       alert("Please select a file to upload!")
       return
     }
+    setUploading(true);
+
     const chunkSize: number = 5 * 1024 * 1024; // 5 MB
     const totalChunks: number = Math.ceil(file.size / chunkSize)
     const progressIndex: number = 100 / totalChunks;
     const fileID: string = Date.now().toString();
-    const fileName: string = file.name;
 
     setRes("");
     setErr("");
