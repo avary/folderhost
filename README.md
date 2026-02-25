@@ -25,7 +25,7 @@ src="https://img.shields.io/docker/pulls/mertjsx/folderhost">
 
 > 🚀 **No Dependencies Required!**
 
-> ⚡ **Lightweight:** Linux **23MB** • Windows **37MB**
+> ⚡ **Lightweight:** Windows / Linux **~17MB**
 
 ---
 
