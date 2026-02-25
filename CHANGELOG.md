@@ -8,6 +8,12 @@ All notable changes to this project will be documented in this file.
 
 - **Service Logs**: Now you can follow user activities related to services.
 
+### Changed
+
+- **Optimized Build Size**: Binary size has reduced:
+  - Linux: ~23 MB -> ~17 MB (26% smaller)
+  - Windows: ~37 MB -> ~17.3 MB (53% smaller)
+
 ### Fixed
 
 - **Upload page**: Fixed "Uploading..." text after trying to upload without a selected file. I didn't expect that someone would click the upload button before selecting a file to upload, but I saw my friend doing that and realised that I needed to fix that tiny issue.
