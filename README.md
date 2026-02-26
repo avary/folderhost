@@ -71,7 +71,7 @@ folderhost.exe
 ```
 
 ### 🐧 Linux
-> 🚀 Just copy and paste this and folderhost will start working. It's around 23 mb for linux.
+> 🚀 Just copy and paste this and folderhost will start working. It's around 17 mb for linux.
 ```bash
 # Download and extract
 wget https://github.com/MertJSX/folderhost/releases/latest/download/folderhost-linux-amd64.zip
@@ -89,7 +89,7 @@ chmod +x folderhost
 
 | Feature | FolderHost | Nextcloud |
 |---------|-----------|-----------|
-| **Binary Size** | ~23MB | 200MB+ |
+| **Binary Size** | ~17MB | 200MB+ |
 | **Dependencies** | None | PHP+Database |
 | **Setup Time** | 30 seconds | 15+ minutes |
 | Single Binary | ✅ | ❌ |
