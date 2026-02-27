@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
+	"strings"
 	"syscall"
 
 	"github.com/MertJSX/folderhost/database/initialize"
@@ -46,9 +47,10 @@ func main() {
 			skipRoutes := []string{
 				"/api/explorer/download",
 				"/api/upload",
+				"/api/raw",
 			}
 			for _, route := range skipRoutes {
-				if c.Path() == route {
+				if strings.HasPrefix(c.Path(), route) {
 					return true
 				}
 			}
@@ -166,6 +168,8 @@ func main() {
 	app.Post("/api/explorer/create-copy", routes.CreateCopy)
 
 	app.Put("/api/explorer/rename", routes.Rename)
+
+	app.Get("/api/raw/:filepath", routes.RawFile)
 
 	app.Get("/api/recovery", routes.Recovery)
 
