@@ -15,6 +15,7 @@ import type { WebSocketResponseType } from '../../types/CodeEditorTypes';
 import { getUserPermissions } from '../../utils/getUserPermissions';
 import CreateDirectoryItem from '../../components/minimal/CreateDirectoryItem/CreateDirectoryItem';
 import RenameDirectoryItem from '../../components/minimal/RenameDirectoryItem/RenameDirectoryItem';
+import FileViewer from '../../components/FileViewer/FileViewer';
 const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL;
 
 const ExplorerPage: React.FC = () => {
@@ -39,6 +40,7 @@ const ExplorerPage: React.FC = () => {
   const [isDirLoading, setIsDirLoading] = useState<boolean>(false)
   const [showCreateItemMenu, setShowCreateItemMenu] = useState<boolean>(false);
   const [showRenameItemMenu, setShowRenameItemMenu] = useState<boolean>(false);
+  const [showFileViewer, setShowFileViewer] = useState<boolean>(false);
   const [contextMenu, setContextMenu] = useState({
     show: false,
     x: 0,
@@ -479,7 +481,8 @@ const ExplorerPage: React.FC = () => {
     setDisableCaching: setDisableCaching,
     startZipping: startZipping,
     zipProgress: zipProgress,
-    zipping: zipping
+    zipping: zipping,
+    setShowFileViewer: setShowFileViewer
   };
 
   return (
@@ -494,6 +497,7 @@ const ExplorerPage: React.FC = () => {
           }}
         >
           <MessageBox message={messageBoxMsg} isErr={messageBoxIsErr} />
+          {showFileViewer && <FileViewer filePath={itemInfo?.path ?? ""} onClose={() => {setShowFileViewer(false)}} /> }
           <CreateDirectoryItem />
           <RenameDirectoryItem />
           <FileExplorer />

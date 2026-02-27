@@ -33,7 +33,7 @@ const FileExplorer: React.FC = () => {
   const [selectedChildEl, setSelectedChildEl] = useState<number | null>(null);
   const directoryRef = useRef<HTMLDivElement | null>(null)
   const {
-    path, directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, readDir, getParent, setShowCreateItemMenu, downloading, permissions, unzipping, waitingResponse, contextMenu, deleteItem, setContextMenu, scrollIndex, isDirLoading: isLoading
+    path, directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, readDir, getParent, setShowCreateItemMenu, downloading, permissions, unzipping, waitingResponse, contextMenu, deleteItem, setContextMenu, scrollIndex, isDirLoading: isLoading, setShowFileViewer
   } = useContext<ExplorerContextType>(ExplorerContext)
 
   const updateSort = useCallback((key: string, direction: string) => {
@@ -118,6 +118,26 @@ const FileExplorer: React.FC = () => {
 
     deleteItem(itemInfo)
   }, [itemInfo, permissions]);
+
+  const handleFileDoubleClick = useCallback((element: DirectoryItem) => {
+    if (element.isDirectory) {
+      readDir(false, element.path)
+    } else {
+      const previewExtensions = [
+        'pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg',
+        'mp4', 'webm', 'ogg', 'mov', 'avi',
+        'mp3', 'wav', 'flac', 'm4a'
+      ];
+
+      const extension = element.name.split('.').pop()?.toLowerCase();
+
+      if (extension && previewExtensions.includes(extension)) {
+        setShowFileViewer(true);
+      } else {
+        window.open(`/editor/${encodeURIComponent(element.path)}`, '_blank', 'rel=noopener noreferrer');
+      }
+    }
+  }, [readDir, setShowFileViewer])
 
   useEffect(() => {
     window.addEventListener('keydown', handleDeleteKeyDown);
@@ -236,10 +256,10 @@ const FileExplorer: React.FC = () => {
           )}
           {
             directoryInfo && permissions?.upload_files && (
-              <Link 
-              target='_blank'
-              className='flex items-center gap-2 p-2 md:p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors' 
-              to={"/upload/"+ encodeURIComponent(directoryInfo.path)}>
+              <Link
+                target='_blank'
+                className='flex items-center gap-2 p-2 md:p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors'
+                to={"/upload/" + encodeURIComponent(directoryInfo.path)}>
                 <LuUpload size={18} />
               </Link>
             )
@@ -374,13 +394,7 @@ const FileExplorer: React.FC = () => {
                 event.stopPropagation();
                 handleContextMenu(event, element)
               }}
-              onDoubleClick={() => {
-                if (element.isDirectory) {
-                  readDir(false, element.path)
-                } else {
-                  window.open(`/editor/${encodeURIComponent(element.path)}`, '_blank', 'rel=noopener noreferrer')
-                }
-              }}
+              onDoubleClick={() => {handleFileDoubleClick(element)}}
             >
               {/* Mobile Layout */}
               <div className="flex items-center gap-3 md:hidden w-full">

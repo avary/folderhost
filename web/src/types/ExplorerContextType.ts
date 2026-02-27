@@ -45,5 +45,6 @@ export interface ExplorerContextType {
         setDisableCaching: React.Dispatch<React.SetStateAction<boolean>>,
         startZipping: Function,
         zipProgress: string,
-        zipping: boolean
+        zipping: boolean,
+        setShowFileViewer: React.Dispatch<React.SetStateAction<boolean>>,
 }
