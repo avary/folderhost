@@ -14,6 +14,11 @@ var SessionCache *Cache[string, types.Account] = CreateCache[string, types.Accou
 	TimeoutCacheEvent: false,
 })
 
+var TokenFingerprint *Cache[string, types.AuthorizationTokenCacheBody] = CreateCache[string, types.AuthorizationTokenCacheBody](time.Hour, CacheProperties{
+	SetCacheEvent:     false,
+	TimeoutCacheEvent: false,
+})
+
 var DirectoryCache *Cache[DirectoryCacheKey, types.ReadDirCache] = CreateCache[DirectoryCacheKey, types.ReadDirCache](30*time.Second, CacheProperties{
 	SetCacheEvent:     true,
 	TimeoutCacheEvent: false,

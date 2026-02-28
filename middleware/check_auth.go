@@ -66,6 +66,20 @@ func CheckAuth(c *fiber.Ctx) error {
 	}
 
 	if token != "" {
+		userIp := c.IP()
+		userUserAgent := c.Get("User-Agent")
+		tokenData, ok := cache.TokenFingerprint.Get(token)
+
+		if !ok {
+			return c.Status(401).JSON(fiber.Map{"err": "invalid token"})
+		}
+
+		// Token security validation
+		if tokenData.Ip != userIp || tokenData.UserAgent != userUserAgent {
+			cache.TokenFingerprint.Delete(token)
+			return c.Status(401).JSON(fiber.Map{"err": "invalid token"})
+		}
+
 		username, err = utils.VerifyToken(token, config.Config.SecretJwtKey)
 		if err != nil {
 			return c.Status(401).JSON(fiber.Map{"err": "invalid token"})

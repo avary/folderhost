@@ -28,3 +28,8 @@ type AccountPermissions struct {
 	EditUsers       bool `yaml:"edit_users" json:"edit_users"`
 	ReadLogs        bool `yaml:"read_logs" json:"read_logs"`
 }
+
+type AuthorizationTokenCacheBody struct {
+	Ip        string
+	UserAgent string
+}

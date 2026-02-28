@@ -2,10 +2,12 @@ package routes
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/MertJSX/folderhost/database/logs"
 	"github.com/MertJSX/folderhost/types"
 	"github.com/MertJSX/folderhost/utils"
+	"github.com/MertJSX/folderhost/utils/cache"
 	"github.com/MertJSX/folderhost/utils/config"
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,6 +24,14 @@ func VerifyPassword(c *fiber.Ctx) error {
 		Action:      "Login",
 		Description: fmt.Sprintf("%s logged in to his account.", c.Locals("account").(types.Account).Username),
 	})
+
+	userIp := c.IP()
+	userUserAgent := c.Get("User-Agent")
+
+	cache.TokenFingerprint.Set(token, types.AuthorizationTokenCacheBody{
+		Ip:        userIp,
+		UserAgent: userUserAgent,
+	}, 24*time.Hour)
 
 	return c.JSON(
 		fiber.Map{
