@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -222,6 +223,13 @@ outerLoop:
 func (sm *ServiceManager) Shutdown() {
 	log.Println("Stopping all services...")
 
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	var forceKillOnce sync.Once
+
+	forceKill := make(chan struct{})
+
 	var wg sync.WaitGroup
 
 	for name := range sm.Services {
@@ -248,6 +256,18 @@ func (sm *ServiceManager) Shutdown() {
 		}(name)
 	}
 
+	go func() {
+		select {
+		case <-sigChan:
+			log.Println("Force shutdown requested by user (CTRL+C again)")
+			forceKillOnce.Do(func() {
+				close(forceKill)
+			})
+		case <-forceKill:
+			return
+		}
+	}()
+
 	done := make(chan struct{})
 	go func() {
 		wg.Wait()
@@ -258,9 +278,15 @@ func (sm *ServiceManager) Shutdown() {
 	case <-done:
 		log.Println("All services were stopped successfully!")
 	case <-time.After(30 * time.Second):
-		log.Println("Can't stop some of the services, forcing to stop...")
+		log.Println("Timeout reached, forcing all services to stop...")
+		sm.forceKillAll()
+	case <-forceKill:
+		log.Println("Force killing all services immediately...")
 		sm.forceKillAll()
 	}
+
+	signal.Stop(sigChan)
+	close(sigChan)
 
 	sm.Cancel()
 }
