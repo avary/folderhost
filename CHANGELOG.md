@@ -2,9 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **File Viewer**: View PDFs, videos, images and audio files directly in the File Explorer.
+
+### Changed
+
+- **Services Shutdown**: Services now stop faster and can be forced using CTRL+C.
+
+### Fixed
+
+- **CodeEditor**: Editor now properly waits for WebSocket connection before allowing edits.
+- **Services**: Resolved mutex deadlock that could freeze the services panel when accessed by unauthorized users.
+
 ## [v26.2.1] - 2026-02-25
 
-## Added
+### Added
 
 - **Service Logs**: Now you can follow user activities related to services.
 
@@ -20,7 +35,7 @@ All notable changes to this project will be documented in this file.
 
 ## [v26.2.0] - 2026-02-22
 
-## Added
+### Added
 
 - **Services** (BETA):
   With this update you can create your own services. For example: Minecraft Server, Web Server etc. Features are:
