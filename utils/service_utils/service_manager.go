@@ -180,6 +180,7 @@ func (sm *ServiceManager) ListAllowedServices(username string) []ServiceStatus {
 outerLoop:
 	for name, service := range sm.Services {
 		service.mu.RLock()
+		defer service.mu.RUnlock()
 
 		for i, v := range service.Config.Users {
 			if v.Username == username {
@@ -213,7 +214,6 @@ outerLoop:
 		}
 
 		serviceStatuses = append(serviceStatuses, status)
-		service.mu.RUnlock()
 	}
 
 	return serviceStatuses
