@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [v26.2.2] - 2026-02-25
 
 <img width="650" height="325" alt="image" src="https://github.com/user-attachments/assets/3c4e606e-af27-4432-b58c-5681cc71e244" />
 
