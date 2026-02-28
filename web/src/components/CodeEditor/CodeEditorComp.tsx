@@ -55,6 +55,11 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
   const [clientsCount, setClientsCount] = useState<number>(0)
   const isRemoteChangeRef = useRef<boolean>(false);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const readOnlyRef = useRef<boolean>(readOnly);
+
+  useEffect(() => {
+    readOnlyRef.current = readOnly;
+  }, [readOnly]);
 
   const handleEditorDidMount = useCallback((editor: editor.IStandaloneCodeEditor, monacoInstance: Monaco) => {
     editorRef.current = editor;
@@ -150,7 +155,7 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
     });
 
     editor.onDidChangeModelContent((event: editor.IModelContentChangedEvent) => {
-      if (readOnly) {
+      if (readOnlyRef.current) {
         editor.trigger("myapp", "undo", "");
         return;
       }
@@ -195,22 +200,64 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
         editor.trigger("myapp", "redo", "");
       }
     });
-  }, [handleEditorChange, readOnly]);
+
+    // Başlangıçta readOnly'i uygula
+    setTimeout(() => {
+      if (editorRef.current) {
+        editorRef.current.updateOptions({ 
+          readOnly: readOnlyRef.current,
+          domReadOnly: readOnlyRef.current 
+        });
+      }
+    }, 0);
+  }, [handleEditorChange]);
 
   useEffect(() => {
-    if (editorRef.current) {
-      const position = editorRef.current.getPosition();
-      const model = editorRef.current.getModel();
+    if (!editorRef.current) return;
+    
+    const position = editorRef.current.getPosition();
+    const model = editorRef.current.getModel();
 
-      if (model) {
-        model.setValue(fileContent);
-        if (position) {
-          editorRef.current.setPosition(position);
-        }
-        editorRef.current.updateOptions({ readOnly: readOnly });
+    if (model) {
+      model.setValue(fileContent);
+      if (position) {
+        editorRef.current.setPosition(position);
       }
     }
-  }, [readOnly, fileContent]);
+  }, [fileContent]);
+
+  useEffect(() => {
+    if (!editorRef.current) return;
+    
+    editorRef.current.updateOptions({ 
+      readOnly: readOnly,
+      domReadOnly: readOnly 
+    });
+    
+    const domNode = editorRef.current.getDomNode();
+    if (domNode) {
+      const textarea = domNode.querySelector('textarea');
+      if (textarea) {
+        textarea.readOnly = readOnly;
+        textarea.disabled = readOnly;
+        
+        if (readOnly) {
+          textarea.style.opacity = '0.8';
+          textarea.style.cursor = 'not-allowed';
+          domNode.setAttribute('title', 'Waiting for connection...');
+        } else {
+          textarea.style.opacity = '1';
+          textarea.style.cursor = 'text';
+          domNode.removeAttribute('title');
+        }
+      }
+    }
+    
+    setTimeout(() => {
+      editorRef.current?.layout();
+    }, 10);
+    
+  }, [readOnly]);
 
   useEffect(() => {
     if (isConnectedRef.current && messages.length > 0) {
@@ -261,7 +308,7 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
           break;
       }
     }
-  }, [messages, isConnectedRef, setRes]);
+  }, [messages, isConnectedRef, setRes, setReadOnly]);
 
   const applyRemoteChange = (change: ChangeData) => {
     if (!editorRef.current) return;

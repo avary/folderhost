@@ -15,9 +15,11 @@ const CodeEditorPage = () => {
     const path = params.path;
     const [res, setRes] = useState<string>("");
     const [err, setErr] = useState<string>("");
-    const [readOnly, setReadOnly] = useState<boolean>(false);
+    const [readOnly, setReadOnly] = useState<boolean>(true);
     const [shouldConnect, setShouldConnect] = useState<boolean>(false)
     const [fileTitle, setFileTitle] = useState<string>("")
+    const [writePermission, setWritePermission] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(true)
     const {
         isConnected,
         isConnectedRef,
@@ -64,16 +66,19 @@ const CodeEditorPage = () => {
     }, [readOnly]);
 
     function readFile() {
+        setIsLoading(true);
         axiosInstance.get(`/read-file?filepath=${path?.slice(1)}`
         ).then((data) => {
             if (data.data.res) {
                 setFileTitle(data.data.title);
                 setFileContent(data.data.data);
-                setReadOnly(!data.data.writePermission);
+                setWritePermission(data.data.writePermission);
                 setEditorLanguage(detectFileLanguage());
-                setShouldConnect(true)
+                setShouldConnect(true);
+                setIsLoading(false);
             }
         }).catch((err) => {
+            setIsLoading(false);
             if (err?.response?.data?.err) {
                 setErr(err.response.data.err)
             }
@@ -131,20 +136,33 @@ const CodeEditorPage = () => {
 
     useEffect(() => {
         if (isConnected) {
-            setRes("Connected!")
+            if (writePermission) {
+                setReadOnly(false);
+                setRes("Connected! You can edit now.");
+            } else {
+                setReadOnly(true);
+                setRes("Connected (Read-only)");
+            }
+            
             setTimeout(() => {
-                setRes("")
-            }, 1000);
-            return
+                setRes("");
+            }, 2000);
+            return;
         }
 
-        setRes("Connection lost")
-
-    }, [isConnected])
+        setReadOnly(true);
+        setRes("Connection lost - Read only mode");
+        
+    }, [isConnected, writePermission]);
 
     return (
-        <div>
+        <div className="relative">
             <MessageBox isErr={err != ""} message={err} setMessage={setErr} />
+            {isLoading && (
+                <div className="absolute inset-0 bg-gray-900/90 flex items-center justify-center z-50">
+                    <div className="text-white text-xl">Loading file...</div>
+                </div>
+            )}
             <CodeEditorComp
                 handleEditorChange={handleEditorChange}
                 editorLanguage={editorLanguage}
@@ -163,4 +181,4 @@ const CodeEditorPage = () => {
     )
 }
 
-export default CodeEditorPage
+export default CodeEditorPage;
