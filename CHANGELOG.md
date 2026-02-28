@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - **File Viewer**: View PDFs, videos, images and audio files directly in the File Explorer.
+- **Image Viewer**: This is a feature included in File Viewer and now you can view the details of a picture. You can zoom in, zoom out, rotate etc.
+- **Security**: Now if someone steals your session token and tries to login from another browser or if he uses another ip address to login your account with the stolen token he will fail and the stolen token will be deleted from the server's cache.
 
 ### Changed
 
