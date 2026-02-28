@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
 import CodeEditorComp from '../../components/CodeEditor/CodeEditorComp.jsx';
@@ -20,6 +20,7 @@ const CodeEditorPage = () => {
     const [fileTitle, setFileTitle] = useState<string>("")
     const [writePermission, setWritePermission] = useState<boolean>(false)
     const [isLoading, setIsLoading] = useState<boolean>(true)
+    const readOnlyRef = useRef<boolean>(readOnly);
     const {
         isConnected,
         isConnectedRef,
@@ -27,12 +28,16 @@ const CodeEditorPage = () => {
         sendMessage
     } = useWebSocket(path?.slice(1) ? path?.slice(1) : "", shouldConnect)
 
-    function handleEditorChange(event: editor.IModelContentChangedEvent) {
+    useEffect(() => {
+        readOnlyRef.current = readOnly;
+    }, [readOnly]);
+
+    const handleEditorChange = useCallback((event: editor.IModelContentChangedEvent) => {
         sendChangeToWebSocket(event.changes)
-    }
+    }, [])
 
     const sendChangeToWebSocket = useCallback((changes: editor.IModelContentChange[]) => {
-        if (!isConnectedRef.current || readOnly) return;
+        if (!isConnectedRef.current || readOnlyRef.current) return;
 
         changes.forEach((change: editor.IModelContentChange) => {
             let changeType;
@@ -63,7 +68,7 @@ const CodeEditorPage = () => {
 
             sendMessage(delta);
         });
-    }, [readOnly]);
+    }, [path]);
 
     function readFile() {
         setIsLoading(true);
@@ -143,16 +148,16 @@ const CodeEditorPage = () => {
                 setReadOnly(true);
                 setRes("Connected (Read-only)");
             }
-            
+
             setTimeout(() => {
                 setRes("");
-            }, 2000);
+            }, 1000);
             return;
         }
 
         setReadOnly(true);
         setRes("Connection lost - Read only mode");
-        
+
     }, [isConnected, writePermission]);
 
     return (
@@ -176,6 +181,7 @@ const CodeEditorPage = () => {
                 setRes={setRes}
                 setFileContent={setFileContent}
                 setReadOnly={setReadOnly}
+                readOnlyRef={readOnlyRef}
             />
         </div>
     )

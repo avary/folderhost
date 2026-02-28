@@ -33,7 +33,8 @@ interface CodeEditorCompProps {
   isConnectedRef: React.RefObject<Boolean>,
   setRes: React.Dispatch<React.SetStateAction<string>>,
   setFileContent: React.Dispatch<React.SetStateAction<string>>,
-  setReadOnly: React.Dispatch<React.SetStateAction<boolean>>
+  setReadOnly: React.Dispatch<React.SetStateAction<boolean>>,
+  readOnlyRef: React.MutableRefObject<boolean>
 }
 
 const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
@@ -47,7 +48,8 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
   messages,
   isConnectedRef,
   setRes,
-  setReadOnly
+  setReadOnly,
+  readOnlyRef
 }) => {
   const [editorFontSize, setEditorFontSize] = useState<number>(parseInt(Cookies.get("editor-fontsize") ?? "18", 10) || 18);
   const [minimap, setMinimap] = useState<boolean>(Cookies.get("editor-minimap") === "false" ? false : true);
@@ -55,11 +57,6 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
   const [clientsCount, setClientsCount] = useState<number>(0)
   const isRemoteChangeRef = useRef<boolean>(false);
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
-  const readOnlyRef = useRef<boolean>(readOnly);
-
-  useEffect(() => {
-    readOnlyRef.current = readOnly;
-  }, [readOnly]);
 
   const handleEditorDidMount = useCallback((editor: editor.IStandaloneCodeEditor, monacoInstance: Monaco) => {
     editorRef.current = editor;
@@ -201,7 +198,6 @@ const CodeEditorComp: React.FC<CodeEditorCompProps> = ({
       }
     });
 
-    // Başlangıçta readOnly'i uygula
     setTimeout(() => {
       if (editorRef.current) {
         editorRef.current.updateOptions({ 
