@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axiosInstance from '../../utils/axiosInstance';
-import { IoMdClose} from 'react-icons/io';
+import { IoMdClose } from 'react-icons/io';
 import { MdFilePresent } from 'react-icons/md';
+import ImageViewer from './ImageViewer';
 
 interface FileData {
   blob: Blob;
@@ -55,7 +56,11 @@ const FileViewer = ({ filePath, onClose }: FileViewerProps) => {
         const url = URL.createObjectURL(response.data);
         currentObjectUrl = url;
         setObjectUrl(url);
-        setFileData({ blob: response.data, contentType: response.headers['content-type'], fileName });
+        setFileData({ 
+          blob: response.data, 
+          contentType: response.headers['content-type'], 
+          fileName 
+        });
       } catch (err) {
         if (isMounted) {
           setError('Failed to load file. Please check your permissions or try again.');
@@ -78,21 +83,12 @@ const FileViewer = ({ filePath, onClose }: FileViewerProps) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose?.();
     };
+    
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
   if (!filePath) return null;
-
-  const handleDownload = () => {
-    if (!objectUrl || !fileData) return;
-    const link = document.createElement('a');
-    link.href = objectUrl;
-    link.download = fileData.fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const fileName = fileData?.fileName ?? filePath.split('/').pop() ?? 'File';
 
@@ -119,6 +115,12 @@ const FileViewer = ({ filePath, onClose }: FileViewerProps) => {
 
     const { contentType } = fileData;
 
+    // IMAGE
+    if (contentType.startsWith('image/')) {
+      return <ImageViewer objectUrl={objectUrl} fileName={fileName} />;
+    }
+
+    // PDF
     if (contentType === 'application/pdf') {
       return (
         <iframe
@@ -130,19 +132,7 @@ const FileViewer = ({ filePath, onClose }: FileViewerProps) => {
       );
     }
 
-    if (contentType.startsWith('image/')) {
-      return (
-        <div className="flex-1 flex items-center justify-center overflow-auto bg-gray-900 rounded-lg border border-gray-600 p-4">
-          <img
-            src={objectUrl}
-            alt="File preview"
-            className="max-w-full max-h-full object-contain rounded"
-            style={{ maxHeight: '60vh' }}
-          />
-        </div>
-      );
-    }
-
+    // VIDEO
     if (contentType.startsWith('video/')) {
       return (
         <div className="flex-1 flex items-center justify-center bg-gray-900 rounded-lg border border-gray-600 p-4">
@@ -158,6 +148,7 @@ const FileViewer = ({ filePath, onClose }: FileViewerProps) => {
       );
     }
 
+    // AUDIO
     if (contentType.startsWith('audio/')) {
       return (
         <div className="flex-1 flex flex-col items-center justify-center gap-6 bg-gray-900 rounded-lg border border-gray-600 p-8">
@@ -173,6 +164,7 @@ const FileViewer = ({ filePath, onClose }: FileViewerProps) => {
       );
     }
 
+    // UNSUPPORTED
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-4 bg-gray-900 rounded-lg border border-gray-600 p-8 text-gray-400">
         <MdFilePresent size={48} className="opacity-40" />
@@ -184,16 +176,14 @@ const FileViewer = ({ filePath, onClose }: FileViewerProps) => {
   };
 
   return (
-    /* Backdrop */
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}
     >
-      {/* Modal */}
       <div
-        className="flex flex-col bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl mx-auto"
-        style={{ height: '85vh', maxHeight: '900px' }}
+        className="flex flex-col bg-gray-800 rounded-xl shadow-2xl w-full max-w-5xl mx-auto"
+        style={{ height: '90vh', maxHeight: '1000px' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -209,15 +199,13 @@ const FileViewer = ({ filePath, onClose }: FileViewerProps) => {
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-            {onClose && (
-              <button
-                onClick={onClose}
-                className="flex items-center justify-center p-2 bg-gray-700 hover:bg-red-600 text-white rounded-lg transition-colors border-2 border-gray-700 hover:border-red-600"
-                title="Close"
-              >
-                <IoMdClose size={18} />
-              </button>
-            )}
+            <button
+              onClick={onClose}
+              className="flex items-center justify-center p-2 bg-gray-700 hover:bg-red-600 text-white rounded-lg transition-colors border-2 border-gray-700 hover:border-red-600"
+              title="Close (Esc)"
+            >
+              <IoMdClose size={18} />
+            </button>
           </div>
         </div>
 
