@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+<img width="650" height="325" alt="image" src="https://github.com/user-attachments/assets/3c4e606e-af27-4432-b58c-5681cc71e244" />
+
 ### Added
 
 - **File Viewer**: View PDFs, videos, images and audio files directly in the File Explorer.
@@ -12,7 +14,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- **Services Shutdown**: Services now stop faster and can be forced using CTRL+C.
+- **Services Shutdown**: Services now stop faster and can be forced using CTRL+C in server-side terminal.
 
 ### Fixed
 
