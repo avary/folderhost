@@ -139,6 +139,8 @@ func main() {
 
 	app.Post("/api/verify-password", routes.VerifyPassword)
 
+	app.Put("/api/logout", routes.Logout)
+
 	app.Get("/api/permissions", routes.GetPermissions)
 
 	app.Get("/api/explorer/read-dir", routes.ReadDirectory)
