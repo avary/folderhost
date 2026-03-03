@@ -69,8 +69,10 @@ const Header = () => {
                 <button
                     className='bg-slate-700 px-5 py-2 rounded-lg border border-slate-600 hover:border-sky-500 hover:bg-slate-600 active:bg-slate-700 font-semibold transition-all text-white'
                     onClick={() => {
-                        Cookies.remove("token");
-                        navigate("/login");
+                        axiosInstance.put("/logout").then(() => {
+                            Cookies.remove("token");
+                            navigate("/login");
+                        })
                     }}
                 >
                     Logout
@@ -101,8 +103,10 @@ const Header = () => {
                         <button
                             className='bg-slate-700 px-4 py-2 rounded-lg border border-slate-600 hover:border-sky-500 hover:bg-slate-600 active:bg-slate-700 font-semibold transition-all text-white text-sm'
                             onClick={() => {
-                                Cookies.remove("token");
-                                navigate("/login");
+                                axiosInstance.put("/logout").then(() => {
+                                    Cookies.remove("token");
+                                    navigate("/login");
+                                })
                             }}
                         >
                             Logout
