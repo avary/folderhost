@@ -8,6 +8,24 @@ All notable changes to this project will be documented in this file.
 
 - **Security**: Now the token fingerprint will be deleted from the server after logout.
 
+### Changed
+
+- Updated Go version from 1.24.5 to 1.25.0
+- Upgraded `github.com/fasthttp/websocket` from v1.5.8 → v1.5.12
+- Upgraded `github.com/fatih/color` from v1.18.0 → v1.19.0
+- Upgraded `github.com/gofiber/fiber/v2` from v2.52.9 → v2.52.12
+- Upgraded `github.com/golang-jwt/jwt/v5` from v5.3.0 → v5.3.1
+- Upgraded `github.com/mattn/go-sqlite3` from v1.14.32 → v1.14.42
+- Upgraded `github.com/savsgio/gotils` from v0.0.0-20240303185622-093b76447511 → v0.0.0-20250924091648-bce9a52d7761
+- Upgraded `golang.org/x/net` from v0.43.0 → v0.53.0
+- Upgraded `github.com/andybalholm/brotli` from v1.2.0 → v1.2.1
+- Upgraded `github.com/klauspost/compress` from v1.18.0 → v1.18.5
+- Upgraded `github.com/mattn/go-isatty` from v0.0.20 → v0.0.21
+- Upgraded `github.com/mattn/go-runewidth` from v0.0.16 → v0.0.23
+- Upgraded `github.com/valyala/fasthttp` from v1.65.0 → v1.70.0
+- Upgraded `golang.org/x/sys` from v0.35.0 → v0.43.0
+- Upgraded axios from 1.7.2 → 1.15.0
+
 ## [v26.2.2] - 2026-02-28
 
 <img width="650" height="325" alt="image" src="https://github.com/user-attachments/assets/3c4e606e-af27-4432-b58c-5681cc71e244" />
