@@ -64,7 +64,7 @@ func RawFile(c *fiber.Ctx) error {
 		}
 	case ".mp4", ".webm", ".ogg", ".mov", ".avi":
 		contentType = "video/" + strings.TrimPrefix(ext, ".")
-	case ".mp3", ".wav", ".flac", ".m4a":
+	case ".mp3", ".wav", ".flac", ".m4a", ".opus":
 		contentType = "audio/" + strings.TrimPrefix(ext, ".")
 	default:
 		return c.Status(400).JSON(fiber.Map{"err": "File content type is not supported"})

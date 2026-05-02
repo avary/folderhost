@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axiosInstance from '../../utils/axiosInstance';
 import { IoMdClose } from 'react-icons/io';
 import { MdFilePresent } from 'react-icons/md';
+import { FaMusic } from "react-icons/fa";
 import ImageViewer from './ImageViewer';
 
 interface FileData {
@@ -150,19 +151,21 @@ const FileViewer = ({ filePath, onClose }: FileViewerProps) => {
 
     // AUDIO
     if (contentType.startsWith('audio/')) {
-      return (
-        <div className="flex-1 flex flex-col items-center justify-center gap-6 bg-gray-900 rounded-lg border border-gray-600 p-8">
-          <div className="p-6 bg-gray-800 rounded-full border-2 border-gray-600">
-            <MdFilePresent size={48} className="text-sky-400" />
-          </div>
-          <p className="text-gray-300 font-medium truncate max-w-xs text-center">{fileName}</p>
-          <audio controls className="w-full max-w-md">
-            <source src={objectUrl} type={contentType} />
-            Your browser does not support audio playback.
-          </audio>
-        </div>
-      );
-    }
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center gap-6 bg-gray-900 rounded-lg border border-gray-600 p-8">
+      <div className="p-6 bg-gray-800 rounded-full border-2 border-gray-600">
+        <FaMusic size={48} className="text-sky-400" />
+      </div>
+      <p className="text-gray-300 font-medium truncate max-w-xs text-center">{fileName}</p>
+      <audio controls className="w-full max-w-md">
+        <source src={objectUrl} type={contentType === 'audio/opus' ? 'audio/opus' : contentType} />
+        <source src={objectUrl} type="audio/webm" />
+        <source src={objectUrl} type="audio/ogg" />
+        Your browser does not support audio playback.
+      </audio>
+    </div>
+  );
+}
 
     // UNSUPPORTED
     return (

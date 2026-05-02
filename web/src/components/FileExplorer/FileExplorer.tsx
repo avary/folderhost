@@ -126,7 +126,7 @@ const FileExplorer: React.FC = () => {
       const previewExtensions = [
         'pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg',
         'mp4', 'webm', 'ogg', 'mov', 'avi',
-        'mp3', 'wav', 'flac', 'm4a'
+        'mp3', 'wav', 'flac', 'm4a', 'opus'
       ];
 
       const extension = element.name.split('.').pop()?.toLowerCase();
