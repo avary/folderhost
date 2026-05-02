@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Login Page**: Show password button added to login page - no more typing mistakes.
+- **OPUS support**: Audio player now handles opus files too.
+- **File Viewer Tweaks**: Files load way faster now.
+- **File uploading**: You can now throw multiple files at once. Just drag, drop, and let it rip. Each file shows you where it's at. Upload page is now a modal component right inside the File Explorer - no more tab switching.
+
 ## [v26.4.0] - 2026-04-16
 
 ### Added
