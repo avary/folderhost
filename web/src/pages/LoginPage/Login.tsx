@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { FaLock, FaUser } from 'react-icons/fa';
+import { FaLock, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
 import logo from "../../assets/favicon.webp"
 
 const Login = () => {
@@ -10,6 +10,7 @@ const Login = () => {
     const [password, setPassword] = useState<string>("");
     const [err, setErr] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [showPassword, setShowPassword] = useState<boolean>(false);
     const navigate = useNavigate();
 
     async function verifyPassword(e: React.FormEvent) {
@@ -105,8 +106,8 @@ const Login = () => {
                         <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                         <input
                             id="password"
-                            type="password"
-                            className='bg-slate-700 border border-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 rounded-lg w-full pl-11 pr-4 py-3 text-white placeholder-slate-400 transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed'
+                            type={showPassword ? "text" : "password"}
+                            className='bg-slate-700 border border-slate-600 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 rounded-lg w-full pl-11 pr-12 py-3 text-white placeholder-slate-400 transition-all outline-none disabled:opacity-50 disabled:cursor-not-allowed'
                             placeholder='Enter your password'
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -114,6 +115,15 @@ const Login = () => {
                             aria-label="Password"
                             autoComplete="current-password"
                         />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 focus:outline-none transition-colors"
+                            disabled={isLoading}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                        >
+                            {showPassword ? <FaEyeSlash className="w-5 h-5" /> : <FaEye className="w-5 h-5" />}
+                        </button>
                     </div>
                 </div>
 
