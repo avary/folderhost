@@ -47,4 +47,6 @@ export interface ExplorerContextType {
         zipProgress: string,
         zipping: boolean,
         setShowFileViewer: React.Dispatch<React.SetStateAction<boolean>>,
+        showUploadMenu: boolean,
+        setShowUploadMenu: React.Dispatch<React.SetStateAction<boolean>>,
 }

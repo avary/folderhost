@@ -25,7 +25,8 @@ const ItemInfo = () => {
     startUnzipping,
     directoryInfo,
     zipProgress,
-    startZipping
+    startZipping,
+    setShowUploadMenu
   } = useContext<ExplorerContextType>(ExplorerContext)
 
   const [imageData, setImageData] = useState("")
@@ -331,12 +332,11 @@ const ItemInfo = () => {
                 <div className='w-full flex flex-col gap-2'>
                   {
                     permissions?.upload_files ?
-                      <a
+                      <button
                         className='bg-purple-600 px-6 font-bold rounded-xl text-center'
                         title='Click to upload.'
-                        target='_blank' rel="noreferrer"
-                        href={`/upload/${encodeURIComponent(itemInfo.path)}`}
-                      >Upload</a> : showDisabled === true ?
+                        onClick={() => {setShowUploadMenu(true)}}
+                      >Upload</button> : showDisabled === true ?
                         <button
                           className='bg-purple-600 px-6 font-bold rounded-xl text-center opacity-50 cursor-not-allowed'
                           title='No permission to upload!'

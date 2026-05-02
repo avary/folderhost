@@ -9,7 +9,6 @@ const ExplorerPage = lazy(() => import('./pages/ExplorerPage/Explorer'));
 const Home = lazy(() => import('./pages/HomePage/Home'));
 const Login = lazy(() => import('./pages/LoginPage/Login'));
 const CodeEditor = lazy(() => import('./pages/CodeEditorPage/CodeEditor'));
-const UploadFile = lazy(() => import('./pages/UploadFilePage/UploadFile'));
 const NoPage = lazy(() => import('./pages/NoPage'));
 const Recovery = lazy(() => import('./pages/Recovery/Recovery'));
 const Users = lazy(() => import('./pages/Users/Users'));
@@ -79,10 +78,6 @@ function App() {
             <Route path="editor">
               <Route index element={<NoPage />} />
               <Route path=":path" element={<CodeEditor />} />
-            </Route>
-            <Route path="upload">
-              <Route index element={<NoPage />} />
-              <Route path=":path" element={<UploadFile />} />
             </Route>
             <Route path="*" element={<NoPage />} />
           </Route>

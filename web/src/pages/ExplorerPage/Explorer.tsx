@@ -16,6 +16,7 @@ import { getUserPermissions } from '../../utils/getUserPermissions';
 import CreateDirectoryItem from '../../components/minimal/CreateDirectoryItem/CreateDirectoryItem';
 import RenameDirectoryItem from '../../components/minimal/RenameDirectoryItem/RenameDirectoryItem';
 import FileViewer from '../../components/FileViewer/FileViewer';
+import UploadItem from '../../components/UploadItem/UploadItem';
 const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL;
 
 const ExplorerPage: React.FC = () => {
@@ -41,6 +42,7 @@ const ExplorerPage: React.FC = () => {
   const [showCreateItemMenu, setShowCreateItemMenu] = useState<boolean>(false);
   const [showRenameItemMenu, setShowRenameItemMenu] = useState<boolean>(false);
   const [showFileViewer, setShowFileViewer] = useState<boolean>(false);
+  const [showUploadMenu, setShowUploadMenu] = useState<boolean>(false);
   const [contextMenu, setContextMenu] = useState({
     show: false,
     x: 0,
@@ -482,7 +484,9 @@ const ExplorerPage: React.FC = () => {
     startZipping: startZipping,
     zipProgress: zipProgress,
     zipping: zipping,
-    setShowFileViewer: setShowFileViewer
+    setShowFileViewer: setShowFileViewer,
+    showUploadMenu: showUploadMenu,
+    setShowUploadMenu: setShowUploadMenu,
   };
 
   return (
@@ -500,6 +504,7 @@ const ExplorerPage: React.FC = () => {
           {showFileViewer && <FileViewer filePath={itemInfo?.path ?? ""} onClose={() => {setShowFileViewer(false)}} /> }
           <CreateDirectoryItem />
           <RenameDirectoryItem />
+          {showUploadMenu && <UploadItem />}
           <FileExplorer />
           {
             itemInfo && (

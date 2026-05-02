@@ -33,7 +33,7 @@ const FileExplorer: React.FC = () => {
   const [selectedChildEl, setSelectedChildEl] = useState<number | null>(null);
   const directoryRef = useRef<HTMLDivElement | null>(null)
   const {
-    path, directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, readDir, getParent, setShowCreateItemMenu, downloading, permissions, unzipping, waitingResponse, contextMenu, deleteItem, setContextMenu, scrollIndex, isDirLoading: isLoading, setShowFileViewer
+    path, directory, setDirectory, directoryInfo, moveItem, itemInfo, setItemInfo, readDir, getParent, setShowCreateItemMenu, downloading, permissions, unzipping, waitingResponse, contextMenu, deleteItem, setContextMenu, scrollIndex, isDirLoading: isLoading, setShowFileViewer, setShowUploadMenu
   } = useContext<ExplorerContextType>(ExplorerContext)
 
   const updateSort = useCallback((key: string, direction: string) => {
@@ -254,16 +254,23 @@ const FileExplorer: React.FC = () => {
               <span className="max-w-[120px] md:max-w-[200px] truncate">{directoryInfo.name}</span>
             </button>
           )}
-          {
-            directoryInfo && permissions?.upload_files && (
-              <Link
-                target='_blank'
-                className='flex items-center gap-2 p-2 md:p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors'
-                to={"/upload/" + encodeURIComponent(directoryInfo.path)}>
-                <LuUpload size={18} />
-              </Link>
-            )
-          }
+          {permissions?.upload_files ? (
+            <button
+              className='flex items-center gap-2 p-2 md:p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors'
+              onClick={() => setShowUploadMenu(true)}
+              title="Upload files"
+            >
+              <LuUpload size={18} />
+            </button>
+          ) : (
+            <button
+              className='flex items-center gap-2 opacity-60 cursor-not-allowed p-2 md:p-3 bg-gray-700 text-white rounded-lg transition-colors'
+              title="No permission to upload files"
+              disabled
+            >
+              <LuUpload size={18} />
+            </button>
+          )}
           {permissions?.create ? <button
             className='flex items-center gap-2 p-2 md:p-3 bg-sky-600 hover:bg-sky-700 text-white rounded-lg transition-colors'
             onClick={() => setShowCreateItemMenu(true)}
@@ -394,7 +401,7 @@ const FileExplorer: React.FC = () => {
                 event.stopPropagation();
                 handleContextMenu(event, element)
               }}
-              onDoubleClick={() => {handleFileDoubleClick(element)}}
+              onDoubleClick={() => { handleFileDoubleClick(element) }}
             >
               {/* Mobile Layout */}
               <div className="flex items-center gap-3 md:hidden w-full">
