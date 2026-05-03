@@ -15,13 +15,21 @@ func HandleUnzip(c *websocket.Conn, mt int, message types.EditorChange) {
 	var account types.Account = c.Locals("account").(types.Account)
 
 	src := config.Config.GetScopedFolder(account.Scope) + message.Path
-	dest := fmt.Sprintf("%s%s/%s", config.Config.GetScopedFolder(account.Scope), utils.GetParentPath(message.Path), utils.GetPureFileName(message.Path))
+	afterExtractDestination := fmt.Sprintf("%s%s/%s", config.Config.GetScopedFolder(account.Scope), utils.GetParentPath(message.Path), utils.GetPureFileName(message.Path))
+	extractDest := fmt.Sprintf("%s%s", config.Config.GetScopedFolder(account.Scope), utils.GetParentPath(message.Path))
 
-	for index := 1; utils.IsExistingPath(dest); index++ {
-		dest = fmt.Sprintf("%s (%d)", dest, index)
+	if utils.IsExistingPath(afterExtractDestination) {
+		errorMsg, _ := json.Marshal(fiber.Map{
+			"type":        "unzip-progress",
+			"totalSize":   "0 Bytes",
+			"isCompleted": false,
+			"abortMsg":    fmt.Sprintf(`Cannot unzip file. Folder "%s" already exists`, utils.GetPureFileName(message.Path)),
+		})
+		c.WriteMessage(mt, errorMsg)
+		return
 	}
 
-	utils.Unzip(src, dest, func(totalSize int64, isCompleted bool, abortMsg string) {
+	utils.Unzip(src, extractDest, func(totalSize int64, isCompleted bool, abortMsg string) {
 		unzipProgress, _ := json.Marshal(fiber.Map{
 			"type":        "unzip-progress",
 			"totalSize":   utils.ConvertBytesToString(totalSize),
