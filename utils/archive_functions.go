@@ -16,12 +16,6 @@ func Unzip(src, dest string, cb func(int64, bool, string)) error {
 	}
 	defer r.Close()
 
-	// err = os.MkdirAll(dest, 0777)
-
-	// if err != nil {
-	// 	return fmt.Errorf("cannot create folder: %v", err)
-	// }
-
 	var (
 		totalSize  int64 = 0
 		currentUID int   = os.Getuid()
