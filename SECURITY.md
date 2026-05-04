@@ -7,5 +7,5 @@ Latest version is supported only. Use the latest version always. The older versi
 
 ## Reporting a Vulnerability
 
-The project is maintained by [MertJSX](https://github.com/MertJSX). If you find a normal bugs or something create an issue. If you catch security issues, please send an email to ```contact@mertjs.dev```. 
+The project is maintained by [MertJSX](https://github.com/MertJSX). If you find a normal bugs or something create an issue. If you catch security issues, please send an email to ```contact@mertsami.com```. 
 Make sure to add screenshots, explain when the problem happens etc. It will be fixed as soon as possible.
