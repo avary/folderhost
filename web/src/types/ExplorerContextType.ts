@@ -49,4 +49,11 @@ export interface ExplorerContextType {
         setShowFileViewer: React.Dispatch<React.SetStateAction<boolean>>,
         showUploadMenu: boolean,
         setShowUploadMenu: React.Dispatch<React.SetStateAction<boolean>>,
+        selectedItems: DirectoryItem[];
+        setSelectedItems: (items: DirectoryItem[] | ((prev: DirectoryItem[]) => DirectoryItem[])) => void;
+        clearSelection: () => void;
+        bulkDelete: () => Promise<void>;
+        bulkCopy: () => Promise<void>;
+        bulkMove: (targetPath: string) => Promise<void>;
+        isBulkActionLoading: boolean;
 }

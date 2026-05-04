@@ -1,7 +1,7 @@
 import { useContext } from "react"
 import ExplorerContext from "../../utils/ExplorerContext"
 import { RiDeleteBin6Fill } from "react-icons/ri";
-import { FaDownload, FaCopy, FaFileArchive } from "react-icons/fa";
+import { FaDownload, FaCopy, FaFileArchive, FaArrowUp } from "react-icons/fa";
 import ExplorerRMItem from "./ExplorerRMItem";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 
@@ -11,7 +11,8 @@ interface ExplorerRightclickMenuProps {
 }
 
 const ExplorerRightclickMenu: React.FC<ExplorerRightclickMenuProps> = ({ x, y }) => {
-    const { itemInfo,
+    const {
+        itemInfo,
         permissions,
         showDisabled,
         deleteItem,
@@ -20,8 +21,29 @@ const ExplorerRightclickMenu: React.FC<ExplorerRightclickMenuProps> = ({ x, y })
         startUnzipping,
         downloadFile,
         setShowRenameItemMenu,
-        downloadProgress } = useContext(ExplorerContext)
+        selectedItems,
+        downloadProgress,
+        moveItem,
+        getParent,
+        path
+    } = useContext(ExplorerContext)
+
     const iconSize = 20;
+
+    if (selectedItems.length > 1) {
+        return null;
+    }
+
+    const moveToParent = () => {
+        if (itemInfo?.isDirectory) {
+            let parentOfDir = itemInfo.parentPath;
+            parentOfDir = getParent(parentOfDir.slice(0, -1));
+            moveItem(itemInfo.path, parentOfDir)
+        } else if (itemInfo) {
+            moveItem(itemInfo?.path, getParent(getParent(itemInfo?.path)))
+        }
+    };
+
     return (
         <div
             style={{ top: `${y}px`, left: `${x}px` }}
@@ -66,6 +88,16 @@ const ExplorerRightclickMenu: React.FC<ExplorerRightclickMenuProps> = ({ x, y })
                         : null
             }
 
+            {/* Move to parent folder */}
+            {path !== "./" && itemInfo?.path !== "./" && (
+                <ExplorerRMItem
+                    title='Move to parent folder'
+                    onClick={moveToParent}
+                >
+                    <FaArrowUp size={iconSize} /> Move Up
+                </ExplorerRMItem>
+            )}
+
             {!downloadProgress && !itemInfo?.isDirectory ?
                 permissions?.download_files ?
                     <ExplorerRMItem
@@ -106,8 +138,6 @@ const ExplorerRightclickMenu: React.FC<ExplorerRightclickMenuProps> = ({ x, y })
                         isDisabled={true}
                     ><FaFileArchive size={iconSize} />Unzipping...</ExplorerRMItem> : null
             }
-
-
         </div>
     )
 }
