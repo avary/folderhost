@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 )
 
 func Unzip(src, dest string, cb func(int64, bool, string)) error {
@@ -63,7 +64,11 @@ func extractFile(file *zip.File, dest string, totalSize *int64, uid int, gid int
 		if err != nil {
 			return err
 		}
-		return os.Chown(filePath, uid, gid)
+		// Windows specific error handling :D
+		if runtime.GOOS != "windows" {
+			return os.Chown(filePath, uid, gid)
+		}
+		return nil
 	}
 
 	if err := os.MkdirAll(filepath.Dir(filePath), 0755); err != nil {
