@@ -17,7 +17,7 @@ func InitializeDatabase() {
 	if utils.IsNotExistingPath("./database.db") {
 		firstTime = true
 	}
-	database.DB, err = sql.Open("sqlite3", "./database.db")
+	database.DB, err = sql.Open("sqlite", "./database.db")
 
 	if err != nil {
 		log.Fatal(err)
