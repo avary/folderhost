@@ -286,6 +286,8 @@ func main() {
 
 	warningText.Printf("\nPlease restart the server if you make any changes on config.yml or services.yml!\n\n")
 
+	utils.StartVersionChecker(Version)
+
 	if err := app.Listen("0.0.0.0" + PORT); err != nil {
 		log.Fatalf("Server error: %v", err)
 	}
