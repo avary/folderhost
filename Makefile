@@ -1,22 +1,40 @@
 start:
 	go run main.go
+
 web:
 	cd web && npm run dev
-# Use docker for development if you want...
+
 docker:
 	docker compose build
 	docker compose up
+
 test-server:
 	go run gotest.tools/gotestsum@latest --format testname ./test/
-# Use mingw for to take Windows build. The other versions won't work :/
-build:
+
+build: # Example: make build VERSION=v26.5.0
 	cd web && npm run build
-	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ./debug/folderhost main.go
-	CC=x86_64-w64-mingw32-gcc CGO_ENABLED=1 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ./debug/folderhost.exe main.go
+# Linux x86_64
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -X main.Version=$(VERSION)" -trimpath -o ./debug/folderhost main.go
+# Linux ARM32
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go build -ldflags="-s -w -X main.Version=$(VERSION)" -trimpath -o ./debug/folderhost-linux-arm main.go
+# Linux ARM64
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w -X main.Version=$(VERSION)" -trimpath -o ./debug/folderhost-linux-arm64 main.go
+# Windows
+	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -X main.Version=$(VERSION)" -trimpath -o ./debug/folderhost.exe main.go
+# macOS Intel
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w -X main.Version=$(VERSION)" -trimpath -o ./debug/folderhost-mac-amd64 main.go
+# macOS ARM
+	CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w -X main.Version=$(VERSION)" -trimpath -o ./debug/folderhost-mac-arm64 main.go
+# FreeBSD
+	CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 go build -ldflags="-s -w -X main.Version=$(VERSION)" -trimpath -o ./debug/folderhost-freebsd main.go
+	@echo "All builds completed!"
+
 setup:
-	@echo "Downloading dependencies..."
+	@echo "Downloading Go dependencies..."
 	go mod tidy
 	go mod download
-	cd web && npm install && npm run build
-
-	@echo "Dependencies are downloaded successfully."
+	@echo "Downloading frontend dependencies..."
+	cd web && npm install
+	@echo "Building frontend..."
+	cd web && npm run build
+	@echo "Setup completed successfully!"
