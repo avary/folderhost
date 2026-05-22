@@ -34,6 +34,12 @@ import (
 //go:embed web/dist/*
 var FrontendFS embed.FS
 
+var (
+	Version   = "unknown"
+	BuildTime = "unknown"
+	GitCommit = "unknown"
+)
+
 func main() {
 	app := fiber.New(fiber.Config{
 		BodyLimit:             10 * 1024 * 1024, // 10 MB
@@ -239,11 +245,18 @@ func main() {
 	greenText := color.New(color.FgGreen)
 	errorText := color.New(color.FgRed)
 	warningText := color.New(color.FgYellow)
-	defaultText.Printf("\nThe server has started on port %d!\n", portInt)
-	defaultText.Print("URL: ")
+	cyanText := color.New(color.FgCyan)
+	// defaultText.Printf("\nThe server has started on port %d!\n", portInt)
+	defaultText.Print("\nVersion: ")
+	greenText.Printf("%s ", Version)
+	defaultText.Print("/ OS: ")
+	warningText.Printf("%s", runtime.GOOS)
+	defaultText.Print("\nDocumentation: ")
+	cyanText.Printf("https://folderhost.org")
+	defaultText.Print("\nGitHub: ")
+	cyanText.Printf("https://github.com/MertJSX/folderhost")
+	defaultText.Print("\nLocal URL: ")
 	warningText.Printf("http://127.0.0.1:%d\n", portInt)
-	defaultText.Print("Operating system: ")
-	warningText.Printf("%s\n", runtime.GOOS)
 
 	_, size, err := utils.GetDirectorySize(config.Folder)
 	if err != nil {
@@ -255,6 +268,14 @@ func main() {
 	if config.StorageLimit != "" {
 		defaultText.Print(" / ")
 		greenText.Printf("%s\n", config.StorageLimit)
+	}
+
+	localIPs := utils.GetLocalIPs()
+	if len(localIPs) > 0 {
+		defaultText.Print("Share with other devices on same network:\n")
+		for _, ip := range localIPs {
+			cyanText.Printf("   http://%s:%d\n", ip, portInt)
+		}
 	} else {
 		fmt.Printf("\n")
 	}
@@ -263,9 +284,9 @@ func main() {
 		defaultText.Print("\nServices are disabled. You can enable them if you need from services.yml!")
 	}
 
-	warningText.Printf("\nPlease restart the server if you make changes on config.yml or services.yml!\n\n")
+	warningText.Printf("\nPlease restart the server if you make any changes on config.yml or services.yml!\n\n")
 
-	if err := app.Listen(PORT); err != nil {
+	if err := app.Listen("0.0.0.0" + PORT); err != nil {
 		log.Fatalf("Server error: %v", err)
 	}
 }
