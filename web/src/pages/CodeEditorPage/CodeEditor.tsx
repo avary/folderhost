@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import Cookies from 'js-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
-import CodeEditorComp from '../../components/CodeEditor/CodeEditorComp.jsx';
+const CodeEditorComp = lazy(() => import('../../components/CodeEditor/CodeEditorComp.jsx'));
 import useWebSocket from '../../utils/useWebSocket.js';
 import axiosInstance from '../../utils/axiosInstance.js';
 import type { editor } from 'monaco-editor';
@@ -162,27 +162,33 @@ const CodeEditorPage = () => {
 
     return (
         <div className="relative">
-            <MessageBox isErr={err != ""} message={err} setMessage={setErr} />
-            {isLoading && (
-                <div className="absolute inset-0 bg-gray-900/90 flex items-center justify-center z-50">
-                    <div className="text-white text-xl">Loading file...</div>
+            <Suspense fallback={
+                <div className="flex items-center justify-center h-screen bg-gray-900">
+                    <div className="text-white text-xl">Loading Editor...</div>
                 </div>
-            )}
-            <CodeEditorComp
-                handleEditorChange={handleEditorChange}
-                editorLanguage={editorLanguage}
-                setEditorLanguage={setEditorLanguage}
-                fileContent={fileContent}
-                response={res}
-                title={fileTitle}
-                readOnly={readOnly}
-                isConnectedRef={isConnectedRef}
-                messages={messages}
-                setRes={setRes}
-                setFileContent={setFileContent}
-                setReadOnly={setReadOnly}
-                readOnlyRef={readOnlyRef}
-            />
+            }>
+                <MessageBox isErr={err != ""} message={err} setMessage={setErr} />
+                {isLoading && (
+                    <div className="absolute inset-0 bg-gray-900/90 flex items-center justify-center z-50">
+                        <div className="text-white text-xl">Loading file...</div>
+                    </div>
+                )}
+                <CodeEditorComp
+                    handleEditorChange={handleEditorChange}
+                    editorLanguage={editorLanguage}
+                    setEditorLanguage={setEditorLanguage}
+                    fileContent={fileContent}
+                    response={res}
+                    title={fileTitle}
+                    readOnly={readOnly}
+                    isConnectedRef={isConnectedRef}
+                    messages={messages}
+                    setRes={setRes}
+                    setFileContent={setFileContent}
+                    setReadOnly={setReadOnly}
+                    readOnlyRef={readOnlyRef}
+                />
+            </Suspense>
         </div>
     )
 }
