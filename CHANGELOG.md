@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Bulk actions**: Now you can select multiple items at once and perform actions like deleting, moving, or copying them.
+- **Server Console**: Better server-side console visualization. Shows local IP addresses you can use to access your FolderHost server.
+- **Cross-platform support**: More binaries for different platforms like macOS and FreeBSD, including ARM architectures. Now Raspberry Pi, Mac, and FreeBSD users can run it without Docker too. Please contact me if you encounter any issues with the new binaries.
+- **Version checker**: I plan to implement an auto-update system without functionality problems. For now, I added a version checker that notifies you when a new version is available and provides the download link.
+
+### Changed
+
+- **Database**: Switched from **github.com/mattn/go-sqlite3** to **modernc.org/sqlite**. I don't want to use CGO anymore. You might encounter new issues, so please contact me if you find any.
+
+### Fixed
+
+- **Windows extract zip error**: Caused by using the **chown** command on Windows.
+
 ## [v26.5.0] - 2026-05-02
 
 ### Added
