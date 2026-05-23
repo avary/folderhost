@@ -154,7 +154,7 @@ jobs:
       run: make setup
 
     - name: Build for all platforms
-      run: make build VERSION=${{ needs.build-and-release.outputs.version }}
+      run: make build VERSION=${{ steps.version.outputs.version }}
 
     - name: Create release packages
       run: |
