@@ -164,19 +164,54 @@ jobs:
     - name: Create release packages
       run: |
         mkdir -p ./release_packages
-        
-        # Linux package
-        cp ./debug/${{ env.BINARY_NAME }} ./${{ env.BINARY_NAME }}
-        chmod +x ./${{ env.BINARY_NAME }}
-        zip -j ./release_packages/folderhost-linux-amd64.zip ./${{ env.BINARY_NAME }}
-        rm ./${{ env.BINARY_NAME }}
-        echo "✅ Linux package created"
-        
-        # Windows package
-        cp ./debug/${{ env.BINARY_NAME }}.exe ./${{ env.BINARY_NAME }}.exe
-        zip -j ./release_packages/folderhost-windows-amd64.zip ./${{ env.BINARY_NAME }}.exe
-        rm ./${{ env.BINARY_NAME }}.exe
+
+        # Linux x86_64 (.tar.gz)
+        cp ./debug/folderhost ./folderhost-linux-amd64
+        chmod +x ./folderhost-linux-amd64
+        tar -czf ./release_packages/folderhost-linux-amd64.tar.gz ./folderhost-linux-amd64
+        rm ./folderhost-linux-amd64
+        echo "✅ Linux x86_64 package created"
+
+        # Linux ARM32 (.tar.gz)
+        cp ./debug/folderhost-linux-arm ./folderhost-linux-armv7
+        chmod +x ./folderhost-linux-armv7
+        tar -czf ./release_packages/folderhost-linux-armv7.tar.gz ./folderhost-linux-armv7
+        rm ./folderhost-linux-armv7
+        echo "✅ Linux ARM32 package created"
+
+        # Linux ARM64 (.tar.gz)
+        cp ./debug/folderhost-linux-arm64 ./folderhost-linux-arm64
+        chmod +x ./folderhost-linux-arm64
+        tar -czf ./release_packages/folderhost-linux-arm64.tar.gz ./folderhost-linux-arm64
+        rm ./folderhost-linux-arm64
+        echo "✅ Linux ARM64 package created"
+
+        # Windows (.zip - sadece Windows)
+        cp ./debug/folderhost.exe ./folderhost-windows-amd64.exe
+        zip -j ./release_packages/folderhost-windows-amd64.zip ./folderhost-windows-amd64.exe
+        rm ./folderhost-windows-amd64.exe
         echo "✅ Windows package created"
+
+        # macOS Intel (.tar.gz)
+        cp ./debug/folderhost-mac-amd64 ./folderhost-macos-intel
+        chmod +x ./folderhost-macos-intel
+        tar -czf ./release_packages/folderhost-macos-intel.tar.gz ./folderhost-macos-intel
+        rm ./folderhost-macos-intel
+        echo "✅ macOS Intel package created"
+
+        # macOS ARM (.tar.gz)
+        cp ./debug/folderhost-mac-arm64 ./folderhost-macos-applesilicon
+        chmod +x ./folderhost-macos-applesilicon
+        tar -czf ./release_packages/folderhost-macos-applesilicon.tar.gz ./folderhost-macos-applesilicon
+        rm ./folderhost-macos-applesilicon
+        echo "✅ macOS Apple Silicon package created"
+
+        # FreeBSD (.tar.gz)
+        cp ./debug/folderhost-freebsd ./folderhost-freebsd-amd64
+        chmod +x ./folderhost-freebsd-amd64
+        tar -czf ./release_packages/folderhost-freebsd-amd64.tar.gz ./folderhost-freebsd-amd64
+        rm ./folderhost-freebsd-amd64
+        echo "✅ FreeBSD package created"
 
     - name: Verify packages
       run: |
@@ -265,11 +300,16 @@ jobs:
           
           ## 📦 Downloads
           
-          | Platform | Download | Description |
-          |----------|----------|-------------|
-          | 🐧 Linux | [`folderhost-linux-amd64.zip`](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-amd64.zip) | Linux x86_64 binary |
-          | 🪟 Windows | [`folderhost-windows-amd64.zip`](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-windows-amd64.zip) | Windows x86_64 executable |
-          | 🐋 Docker | `docker pull ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:${{ needs.build-and-release.outputs.version }}` | Docker image |
+          | Platform | Architecture | Format | Download |
+          |----------|--------------|--------|----------|
+          | 🐧 Linux | x86_64 | tar.gz | [folderhost-linux-amd64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-amd64.tar.gz) |
+          | 🐧 Linux | ARMv7 (32-bit) | tar.gz | [folderhost-linux-armv7.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-armv7.tar.gz) |
+          | 🐧 Linux | ARM64 | tar.gz | [folderhost-linux-arm64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-arm64.tar.gz) |
+          | 🪟 Windows | x86_64 | zip | [folderhost-windows-amd64.zip](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-windows-amd64.zip) |
+          | 🍎 macOS | Intel | tar.gz | [folderhost-macos-intel.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-macos-intel.tar.gz) |
+          | 🍎 macOS | Apple Silicon (M1/M2/M3) | tar.gz | [folderhost-macos-applesilicon.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-macos-applesilicon.tar.gz) |
+          | 🔷 FreeBSD | x86_64 | tar.gz | [folderhost-freebsd-amd64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-freebsd-amd64.tar.gz) |
+          | 🐋 Docker | Multi-arch | image | `docker pull ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:${{ needs.build-and-release.outputs.version }}` |
           
           ## 🐋 Docker Usage
           
@@ -289,15 +329,15 @@ jobs:
           
           ## 🔧 Quick Start
           
-          ### Linux
+          ### Linux (x86_64)
           ```bash
           # Download and extract
-          wget https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-amd64.zip
-          unzip folderhost-linux-amd64.zip
-          chmod +x folderhost
+          wget https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-amd64.tar.gz
+          tar -xzf folderhost-linux-amd64.tar.gz
+          chmod +x folderhost-linux-amd64
           
           # Run
-          ./folderhost
+          ./folderhost-linux-amd64
           ```
           
           ### Windows
@@ -330,8 +370,13 @@ jobs:
           
           💡 For issues and questions, please visit the [GitHub Issues](https://github.com/${{ github.repository }}/issues) page.
         files: |
-          ./release_packages/folderhost-linux-amd64.zip
+          ./release_packages/folderhost-linux-amd64.tar.gz
+          ./release_packages/folderhost-linux-armv7.tar.gz
+          ./release_packages/folderhost-linux-arm64.tar.gz
           ./release_packages/folderhost-windows-amd64.zip
+          ./release_packages/folderhost-macos-intel.tar.gz
+          ./release_packages/folderhost-macos-applesilicon.tar.gz
+          ./release_packages/folderhost-freebsd-amd64.tar.gz
         draft: false
         prerelease: false
         generate_release_notes: false
