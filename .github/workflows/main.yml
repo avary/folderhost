@@ -150,16 +150,11 @@ jobs:
       run: |
         make test-server
 
-    - name: Install Mingw for Windows cross-compilation
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc-mingw-w64
-
     - name: Install dependencies
       run: make setup
 
-    - name: Build for Linux and Windows
-      run: make build
+    - name: Build for all platforms
+      run: make build VERSION=${{ needs.build-and-release.outputs.version }}
 
     - name: Create release packages
       run: |
