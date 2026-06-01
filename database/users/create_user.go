@@ -1,13 +1,13 @@
 package users
 
 import (
-	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"log"
 
 	"github.com/MertJSX/folderhost/database"
 	"github.com/MertJSX/folderhost/types"
+	"github.com/MertJSX/folderhost/utils"
 )
 
 func CreateUser(user *types.Account) error {
@@ -55,7 +55,11 @@ func CreateUser(user *types.Account) error {
 
 	defer stmt.Close()
 
-	hash := sha256.Sum256([]byte(user.Password))
+	hash, err := utils.Hash([]byte(user.Password))
+	if err != nil {
+		return err
+	}
+
 	hashString := hex.EncodeToString(hash[:])
 
 	_, err = stmt.Exec(
