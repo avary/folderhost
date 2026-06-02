@@ -1,11 +1,11 @@
 package users
 
 import (
-	"crypto/sha256"
 	"encoding/hex"
 
 	"github.com/MertJSX/folderhost/database"
 	"github.com/MertJSX/folderhost/types"
+	"github.com/MertJSX/folderhost/utils"
 )
 
 func UpdateAdmin(user *types.Account) error {
@@ -35,10 +35,14 @@ func UpdateAdmin(user *types.Account) error {
 		WHERE id = 1
 	`
 
-	hash := sha256.Sum256([]byte(user.Password))
+	hash, err := utils.Hash([]byte(user.Password))
+	if err != nil {
+		return err
+	}
+
 	hashString := hex.EncodeToString(hash[:])
 
-	_, err := database.DB.Exec(
+	_, err = database.DB.Exec(
 		query,
 		user.Username,
 		hashString,

@@ -1,10 +1,10 @@
 package users
 
 import (
-	"crypto/sha256"
 	"encoding/hex"
 
 	"github.com/MertJSX/folderhost/database"
+	"github.com/MertJSX/folderhost/utils"
 )
 
 func UpdateUserPassword(id int, newPassword string) error {
@@ -14,10 +14,14 @@ func UpdateUserPassword(id int, newPassword string) error {
 		WHERE id = ?;
 	`
 
-	hash := sha256.Sum256([]byte(newPassword))
-	passwordHashString := hex.EncodeToString(hash[:])
+	hash, err := utils.Hash([]byte(newPassword))
+	if err != nil {
+		return err
+	}
+	defer clear(hash)
 
-	_, err := database.DB.Exec(
+	passwordHashString := hex.EncodeToString(hash[:])
+	_, err = database.DB.Exec(
 		query,
 		passwordHashString,
 		id,
