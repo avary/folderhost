@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/hex"
+	"strings"
 	"time"
 
 	"github.com/MertJSX/folderhost/database/users"
@@ -10,6 +11,7 @@ import (
 	"github.com/MertJSX/folderhost/utils/cache"
 	"github.com/MertJSX/folderhost/utils/config"
 	"github.com/gofiber/fiber/v2"
+	"github.com/matthewhartstonge/argon2"
 )
 
 func CheckAuth(c *fiber.Ctx) error {
@@ -20,40 +22,29 @@ func CheckAuth(c *fiber.Ctx) error {
 	var err error
 	var token string
 
-	c.BodyParser(&body)
-
-	path := c.Query("path")
-	folder := c.Query("folder")
-	itemName := c.Query("itemName")
-	filepath := c.Query("filepath")
-	oldFilepath := c.Query("oldFilepath")
-	newFilepath := c.Query("newFilepath")
-
-	if path != "" && !utils.IsSafePath(path) {
-		return c.Status(403).JSON(fiber.Map{"err": "forbidden"})
+	if len(c.Body()) > 0 {
+		err = c.BodyParser(&body)
+		if err != nil {
+			return c.Status(400).JSON(fiber.Map{"err": "invalid json in request body"})
+		}
+	} else {
+		body = make(map[string]interface{})
 	}
 
-	if folder != "" && !utils.IsSafePath(folder) {
-		return c.Status(403).JSON(fiber.Map{"err": "forbidden"})
+	pathsToCheck := []string{"path", "folder", "itemName", "filepath", "oldFilepath", "newFilepath"}
+	for _, p := range pathsToCheck {
+		val := c.Query(p)
+		if val != "" && !utils.IsSafePath(val) {
+			return c.Status(403).JSON(fiber.Map{"err": "forbidden"})
+		}
 	}
 
-	if itemName != "" && !utils.IsSafePath(itemName) {
-		return c.Status(403).JSON(fiber.Map{"err": "forbidden"})
+	authHeader := c.Get("Authorization")
+	if after, ok := strings.CutPrefix(authHeader, "Bearer "); ok {
+		token = after
+	} else {
+		token = authHeader
 	}
-
-	if filepath != "" && !utils.IsSafePath(filepath) {
-		return c.Status(403).JSON(fiber.Map{"err": "forbidden"})
-	}
-
-	if oldFilepath != "" && !utils.IsSafePath(oldFilepath) {
-		return c.Status(403).JSON(fiber.Map{"err": "forbidden"})
-	}
-
-	if newFilepath != "" && !utils.IsSafePath(newFilepath) {
-		return c.Status(403).JSON(fiber.Map{"err": "forbidden"})
-	}
-
-	token = c.Get("Authorization")
 
 	reqUsername, hasUsername := body["username"].(string)
 	reqPassword, hasPassword := body["password"].(string)
@@ -74,8 +65,8 @@ func CheckAuth(c *fiber.Ctx) error {
 			return c.Status(401).JSON(fiber.Map{"err": "invalid token"})
 		}
 
-		// Token security validation
-		if tokenData.Ip != userIp || tokenData.UserAgent != userUserAgent {
+		// TODO this should be a opt in feature
+		if subtle.ConstantTimeCompare([]byte(tokenData.Ip), []byte(userIp)) != 1 || tokenData.UserAgent != userUserAgent {
 			cache.TokenFingerprint.Delete(token)
 			return c.Status(401).JSON(fiber.Map{"err": "invalid token"})
 		}
@@ -92,27 +83,37 @@ func CheckAuth(c *fiber.Ctx) error {
 	}
 
 	if cacheAccount, ok := cache.SessionCache.Get(username); ok {
-		hash := sha256.Sum256([]byte(password))
-		hashString := hex.EncodeToString(hash[:])
-		if controlPassword && hashString != cacheAccount.Password {
-			return c.Status(401).JSON(fiber.Map{"err": "wrong password"})
+		if controlPassword {
+			hashed_password, err := hex.DecodeString(cacheAccount.Password)
+			defer clear(hashed_password)
+			if err != nil {
+				return c.Status(500).JSON(fiber.Map{"err": "internal server error"})
+			}
+			ok, err := argon2.VerifyEncoded([]byte(password), hashed_password)
+			if err != nil || !ok {
+				return c.Status(401).JSON(fiber.Map{"err": "wrong password"})
+			}
 		}
-
 		c.Locals("account", cacheAccount)
 		return c.Next()
 	}
 
 	foundAccount, err := users.GetUserByUsername(username)
-
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"err": "account not found"})
 	}
 
-	hash := sha256.Sum256([]byte(password))
-	hashString := hex.EncodeToString(hash[:])
+	if controlPassword {
+		hashed_password, err := hex.DecodeString(foundAccount.Password)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"err": "internal server error"})
+		}
+		defer clear(hashed_password)
 
-	if controlPassword && hashString != foundAccount.Password {
-		return c.Status(401).JSON(fiber.Map{"err": "wrong password"})
+		ok, err := argon2.VerifyEncoded([]byte(password), hashed_password)
+		if err != nil || !ok {
+			return c.Status(401).JSON(fiber.Map{"err": "wrong password"})
+		}
 	}
 
 	cache.SessionCache.Set(username, foundAccount, 30*time.Minute)

@@ -25,7 +25,7 @@ src="https://img.shields.io/docker/pulls/mertjsx/folderhost">
 
 > 🚀 **No Dependencies Required!**
 
-> ⚡ **Lightweight:** Windows / Linux **~17MB**
+> ⚡ **Lightweight:** Windows / Linux **~19MB**
 
 ---
 
@@ -73,13 +73,12 @@ folderhost.exe
 ### 🐧 Linux
 > 🚀 Just copy and paste this and folderhost will start working. It's around 17 mb for linux.
 ```bash
-# Download and extract
-wget https://github.com/MertJSX/folderhost/releases/latest/download/folderhost-linux-amd64.zip
-unzip folderhost-linux-amd64.zip
-chmod +x folderhost
+wget https://github.com/MertJSX/folderhost/releases/latest/download/folderhost-linux-amd64.tar.gz
+tar -xzf folderhost-linux-amd64.tar.gz
+chmod +x folderhost-linux-amd64
 
 # Run
-./folderhost
+./folderhost-linux-amd64
 ```
 
 ---
@@ -89,7 +88,7 @@ chmod +x folderhost
 
 | Feature | FolderHost | Nextcloud |
 |---------|-----------|-----------|
-| **Binary Size** | ~17MB | 200MB+ |
+| **Binary Size** | ~19MB | 200MB+ |
 | **Dependencies** | None | PHP+Database |
 | **Setup Time** | 30 seconds | 15+ minutes |
 | Single Binary | ✅ | ❌ |
