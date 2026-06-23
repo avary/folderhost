@@ -47,13 +47,13 @@ src="https://img.shields.io/docker/pulls/mertjsx/folderhost">
 
 ## 📦 Download & Run (Recommended)
 
-> ⚠️ **Beta Notice:** FolderHost is currently in **beta**. Some features may be incomplete or subject to change.
+> **Beta Notice:** FolderHost is currently in **beta**. Some features may be incomplete or subject to change.
 
 <br>
 
 [![Download Latest Release](https://img.shields.io/github/v/release/MertJSX/folderhost?style=for-the-badge&logo=github&label=Download&color=2ea44f)](https://github.com/MertJSX/folderhost/releases/latest)
 
-### 🐳 Docker
+### Docker
 ```bash
 # Run container, you can access the files using docker volumes
   docker run -d \
@@ -64,14 +64,14 @@ src="https://img.shields.io/docker/pulls/mertjsx/folderhost">
     mertjsx/folderhost:latest
 ```
 
-### 🪟 Windows
+### Windows
 ```powershell
 # Download the .exe, then:
 folderhost.exe
 ```
 
-### 🐧 Linux
-> 🚀 Just copy and paste this and folderhost will start working. It's around 17 mb for linux.
+### Linux
+> Just copy and paste this and folderhost will start working. It's around 19 mb for linux.
 ```bash
 wget https://github.com/MertJSX/folderhost/releases/latest/download/folderhost-linux-amd64.tar.gz
 tar -xzf folderhost-linux-amd64.tar.gz
@@ -91,27 +91,27 @@ chmod +x folderhost-linux-amd64
 | **Binary Size** | ~19MB | 200MB+ |
 | **Dependencies** | None | PHP+Database |
 | **Setup Time** | 30 seconds | 15+ minutes |
-| Single Binary | ✅ | ❌ |
-| Real-time Editing | ✅ | ❌ |
-| Easy Setup | ✅ | ❌ |
+| Single Binary | Yes | No |
+| Real-time Editing | Yes | No |
+| Easy Setup | Yes | No |
 
 ---
 
 ## ✨ Features
 
-### 🚀 Core
+### Core
 - **Single Binary Deployment** - No dependencies, just run
 - **High Performance** - Built with Go backend + React frontend
 - **Real-time Collaboration** - Live code editing with Monaco Editor
 - **Multi-user Support** - Permissions system
 
-### 🔧 File Management
+### File Management
 - Full file operations (upload, download, move, copy, rename)
 - Chunked file uploads for large files
 - Recovery bin with configurable limits
 - Storage quota management per folder
 
-### 🔒 Security & Monitoring
+### Security & Monitoring
 - JWT-based authentication
 - Granular user permissions
 - Audit logs for all activities
@@ -194,35 +194,39 @@ clear_logs_after: 7 # Days
 ```
 </details>
 
-**🎯 Default Access**
+**Default Access**
 
 Once running, open your browser to:
 ```
 http://localhost:5000
 ```
 
-Default credentials: `admin` / `123` (⚠️ **Change immediately!**)
+Default credentials: `admin` / `123` (**Change immediately!**)
 
-[📖 View All Releases](https://github.com/MertJSX/folderhost/releases) • [🐛 Report Issues](https://github.com/MertJSX/folderhost/issues)
+[View All Releases](https://github.com/MertJSX/folderhost/releases) • [Report Issues](https://github.com/MertJSX/folderhost/issues) • [Changelog](https://github.com/MertJSX/folderhost/blob/main/CHANGELOG.md)
 
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please feel free to submit a Pull Request. You can look for Contributing information [HERE](https://github.com/MertJSX/folderhost?tab=contributing-ov-file)!
 
 ---
 
-## 📝 License
+## License
 
 [GPL-3.0 License](LICENSE)
 
 ---
 
-## 🙏 Credits
+## Credits
 
 Built with ❤️ by [MertJSX](https://github.com/MertJSX)
 
-**Tech Stack:**
+### Contributors
+- Simeon / @simeonnv *(Github: https://github.com/simeonnv)*
+- Ömer Açıkgöz / @Omeracix *(Github: https://github.com/Omeracix)*
+
+### Tech Stack:
 - Backend: Go
 - Frontend: React + TypeScript + Vite
 - Editor: Monaco Editor
