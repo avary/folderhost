@@ -31,6 +31,24 @@ const Login = () => {
             );
             if (data.res) {
                 Cookies.set("token", data.token);
+                localStorage.setItem("last_username", username);
+
+                const recoveryStr = localStorage.getItem("session_recovery");
+                if (recoveryStr) {
+                    try {
+                        const recoveryData = JSON.parse(recoveryStr);
+                        const isExpired = Date.now() - recoveryData.timestamp > 5 * 60 * 1000;
+                        if (!isExpired && recoveryData.username === username) {
+                            localStorage.removeItem("session_recovery");
+                            navigate(recoveryData.path);
+                            return;
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse session_recovery", e);
+                    }
+                    localStorage.removeItem("session_recovery");
+                }
+
                 navigate('/');
             }
         } catch (err: any) {

@@ -24,6 +24,18 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.data?.err === "invalid token" || error.response?.data?.err === "wrong password" || error.response?.data?.err === "authorization required" || error.response?.data?.err === "account not found") {
+            const currentPath = window.location.pathname;
+            const fullPath = currentPath + window.location.search + window.location.hash;
+            const lastUsername = localStorage.getItem("last_username");
+
+            if (currentPath.startsWith("/explorer") && lastUsername) {
+                localStorage.setItem("session_recovery", JSON.stringify({
+                    path: fullPath,
+                    username: lastUsername,
+                    timestamp: Date.now()
+                }));
+            }
+
             Cookies.remove("token");
             window.location.href = '/login';
         }

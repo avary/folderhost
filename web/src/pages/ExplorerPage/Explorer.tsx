@@ -158,6 +158,17 @@ const ExplorerPage: React.FC = () => {
         setPermissions(perms)
       });
     } else {
+      const currentPath = window.location.pathname;
+      const fullPath = currentPath + window.location.search + window.location.hash;
+      const lastUsername = localStorage.getItem("last_username");
+
+      if (currentPath.startsWith("/explorer") && lastUsername) {
+          localStorage.setItem("session_recovery", JSON.stringify({
+              path: fullPath,
+              username: lastUsername,
+              timestamp: Date.now()
+          }));
+      }
       navigate("/login")
     }
   }, [])

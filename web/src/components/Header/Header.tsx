@@ -14,7 +14,11 @@ const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useLayoutEffect(() => {
-        if (Cookies.get("username")) return
+        const cookieUsername = Cookies.get("username");
+        if (cookieUsername) {
+            localStorage.setItem("last_username", cookieUsername);
+            return;
+        }
 
         fetchUserInfo()
     }, []);
@@ -24,6 +28,7 @@ const Header = () => {
         ).then((response) => {
             if (response.data.username) {
                 setUsername(response.data.username);
+                localStorage.setItem("last_username", response.data.username);
             }
         }).catch((err) => {
             console.error('Failed to fetch user info:', err);
