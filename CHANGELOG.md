@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Session recovery**: If your session token expires and client redirects you to the login page, it will now save your path and redirect you to the same page after you login.
+- **Save file ordering**: Now client saves the file ordering settings and you don't have to select the file ordering settings every time you visit the explorer page.
+
+### Changed
+
+- **Redirect on wrong dirpath**: If you try to access a directory path that doesn't exist, it will now redirect you to the / directory instead of showing you an error.
+
+### Fixed
+
+- **Security**: Revised auth check middleware and fixed critical vulnerability. (Thanks to [simeonnv](https://github.com/simeonnv))
+
+
 ## [v26.5.1] - 2026-05-23
 
 ### Added
