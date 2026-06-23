@@ -180,6 +180,10 @@ const ExplorerPage: React.FC = () => {
   function handleError(err: any, isErrorData?: boolean): void {
     setWaitingResponse(false);
     if (isErrorData && err.err) {
+      if (err.err === "Wrong dirpath!" && path !== "./") {
+        readDir(false, "./");
+        return;
+      }
       declareError(err.err)
       return
     }
@@ -188,6 +192,10 @@ const ExplorerPage: React.FC = () => {
       return
     }
     if (err.response) {
+      if (err.response.data.err === "Wrong dirpath!" && path !== "./") {
+        readDir(false, "./");
+        return;
+      }
       declareError(err.response.data.err)
     } else {
       declareError("Cannot connect to the server!")

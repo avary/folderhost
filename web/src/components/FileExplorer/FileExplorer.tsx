@@ -27,7 +27,17 @@ const FileExplorer: React.FC = () => {
   const [draggedItem, setDraggedItem] = useState<DirectoryItem | null>();
   const [draggedItems, setDraggedItems] = useState<DirectoryItem[]>([]);
   const [dropTarget, setDropTarget] = useState<string>("");
-  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' }>(() => {
+    const saved = localStorage.getItem("explorer_sort_config");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse sort config", e);
+      }
+    }
+    return { key: 'date', direction: 'desc' };
+  });
   const childElements = useRef<Array<HTMLDivElement>>([]);
   const previousDirRef = useRef<HTMLButtonElement | null>(null);
   const [selectedChildEl, setSelectedChildEl] = useState<number | null>(null);
@@ -75,7 +85,9 @@ const FileExplorer: React.FC = () => {
 
     updateSort(key, direction)
 
-    setSortConfig({ key, direction });
+    const newConfig = { key, direction };
+    setSortConfig(newConfig);
+    localStorage.setItem("explorer_sort_config", JSON.stringify(newConfig));
   }, [sortConfig, updateSort]);
 
   const getSortIcon = useCallback((key: string) => {
