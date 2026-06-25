@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- **Upload system**: Fixed issue where upload system didn't work properly. It was throwing "invalid json in request body" error for no reason.
+
 ## [v26.6.0] - 2026-06-23
 
 ### Added
