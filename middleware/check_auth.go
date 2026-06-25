@@ -22,12 +22,8 @@ func CheckAuth(c *fiber.Ctx) error {
 	var err error
 	var token string
 
-	if len(c.Body()) > 0 {
-		err = c.BodyParser(&body)
-		if err != nil {
-			return c.Status(400).JSON(fiber.Map{"err": "invalid json in request body"})
-		}
-	} else {
+	_ = c.BodyParser(&body)
+	if body == nil {
 		body = make(map[string]interface{})
 	}
 
