@@ -46,11 +46,11 @@ jobs:
         
         CURRENT_MONTH=$((10#$CURRENT_MONTH))
         
-        echo "📅 Current date: Year=$CURRENT_YEAR, Month=$CURRENT_MONTH"
+        echo "Current date: Year=$CURRENT_YEAR, Month=$CURRENT_MONTH"
         
         if [[ -n "${{ github.event.inputs.custom_version }}" ]]; then
           VERSION="${{ github.event.inputs.custom_version }}"
-          echo "✏️ Using custom version: $VERSION"
+          echo "Using custom version: $VERSION"
         
         elif [[ "${{ github.event.inputs.release_type }}" == "auto" ]]; then
           LATEST_TAG=$(git tag -l "v${CURRENT_YEAR}.${CURRENT_MONTH}.*" --sort=-v:refname | head -n 1)
@@ -286,9 +286,9 @@ jobs:
         tag_name: ${{ needs.build-and-release.outputs.version }}
         name: Release ${{ needs.build-and-release.outputs.version }}
         body: |
-          🚀 **Folderhost Release ${{ needs.build-and-release.outputs.version }}**
+          FolderHost Release ${{ needs.build-and-release.outputs.version }}
           
-          📅 Release Date: ${{ needs.build-and-release.outputs.current_date }}
+          Release Date: ${{ needs.build-and-release.outputs.current_date }}
           
           ## 📋 What's New
           ${{ needs.build-and-release.outputs.release_notes }}
@@ -297,14 +297,14 @@ jobs:
           
           | Platform | Architecture | Format | Download |
           |----------|--------------|--------|----------|
-          | 🐧 Linux | x86_64 | tar.gz | [folderhost-linux-amd64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-amd64.tar.gz) |
-          | 🐧 Linux | ARMv7 (32-bit) | tar.gz | [folderhost-linux-armv7.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-armv7.tar.gz) |
-          | 🐧 Linux | ARM64 | tar.gz | [folderhost-linux-arm64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-arm64.tar.gz) |
-          | 🪟 Windows | x86_64 | zip | [folderhost-windows-amd64.zip](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-windows-amd64.zip) |
-          | 🍎 macOS | Intel | tar.gz | [folderhost-macos-intel.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-macos-intel.tar.gz) |
-          | 🍎 macOS | Apple Silicon (M1/M2/M3) | tar.gz | [folderhost-macos-applesilicon.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-macos-applesilicon.tar.gz) |
-          | 🔷 FreeBSD | x86_64 | tar.gz | [folderhost-freebsd-amd64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-freebsd-amd64.tar.gz) |
-          | 🐋 Docker | Multi-arch | image | `docker pull ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:${{ needs.build-and-release.outputs.version }}` |
+          | Linux | x86_64 | tar.gz | [folderhost-linux-amd64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-amd64.tar.gz) |
+          | Linux | ARMv7 (32-bit) | tar.gz | [folderhost-linux-armv7.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-armv7.tar.gz) |
+          | Linux | ARM64 | tar.gz | [folderhost-linux-arm64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-linux-arm64.tar.gz) |
+          | Windows | x86_64 | zip | [folderhost-windows-amd64.zip](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-windows-amd64.zip) |
+          | macOS | Intel | tar.gz | [folderhost-macos-intel.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-macos-intel.tar.gz) |
+          | macOS | Apple Silicon (M1/M2/M3) | tar.gz | [folderhost-macos-applesilicon.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-macos-applesilicon.tar.gz) |
+          | FreeBSD | x86_64 | tar.gz | [folderhost-freebsd-amd64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-freebsd-amd64.tar.gz) |
+          | Docker | Multi-arch | image | `docker pull ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:${{ needs.build-and-release.outputs.version }}` |
           
           ## 🐋 Docker Usage
           
