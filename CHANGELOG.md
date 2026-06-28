@@ -11,6 +11,9 @@ All notable changes to this project will be documented in this file.
 Old: <img width="1280" height="303" alt="image" src="https://github.com/user-attachments/assets/caa428ed-8fa0-4f0e-b1da-5bdf83f8a6ad" />
 New: <img width="1280" height="303" alt="image" src="https://github.com/user-attachments/assets/936d999a-4ddf-40a2-9040-8080672c3a80" />
 
+### Security
+
+- **Login system**: Limit max failed login attempts to 5 (Username will be blocked for 5 minutes after 5 failed login attempts).
 
 ## [v26.6.1] - 2026-06-25
 
