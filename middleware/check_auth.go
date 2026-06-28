@@ -61,7 +61,7 @@ func CheckAuth(c *fiber.Ctx) error {
 			return c.Status(401).JSON(fiber.Map{"err": "invalid token"})
 		}
 
-		// TODO this should be a opt in feature
+		// TODO: this should be a opt in feature
 		if subtle.ConstantTimeCompare([]byte(tokenData.Ip), []byte(userIp)) != 1 || tokenData.UserAgent != userUserAgent {
 			cache.TokenFingerprint.Delete(token)
 			return c.Status(401).JSON(fiber.Map{"err": "invalid token"})
@@ -78,6 +78,15 @@ func CheckAuth(c *fiber.Ctx) error {
 		controlPassword = true
 	}
 
+	unsuccessfullLoginCount, ok := cache.LoginFailedCache.Get(username)
+	if !ok {
+		unsuccessfullLoginCount = 0
+	}
+
+	if unsuccessfullLoginCount > 5 {
+		return c.Status(403).JSON(fiber.Map{"err": "Too many failed login attempts. Please try again after 5 minutes."})
+	}
+
 	if cacheAccount, ok := cache.SessionCache.Get(username); ok {
 		if controlPassword {
 			hashed_password, err := hex.DecodeString(cacheAccount.Password)
@@ -87,8 +96,12 @@ func CheckAuth(c *fiber.Ctx) error {
 			}
 			ok, err := argon2.VerifyEncoded([]byte(password), hashed_password)
 			if err != nil || !ok {
+				cache.LoginFailedCache.Set(username, unsuccessfullLoginCount+1, 5*time.Minute)
 				return c.Status(401).JSON(fiber.Map{"err": "wrong password"})
 			}
+		}
+		if controlPassword {
+			cache.LoginFailedCache.Delete(username)
 		}
 		c.Locals("account", cacheAccount)
 		return c.Next()
@@ -96,6 +109,7 @@ func CheckAuth(c *fiber.Ctx) error {
 
 	foundAccount, err := users.GetUserByUsername(username)
 	if err != nil {
+		cache.LoginFailedCache.Set(username, unsuccessfullLoginCount+1, 5*time.Minute)
 		return c.Status(404).JSON(fiber.Map{"err": "account not found"})
 	}
 
@@ -108,8 +122,11 @@ func CheckAuth(c *fiber.Ctx) error {
 
 		ok, err := argon2.VerifyEncoded([]byte(password), hashed_password)
 		if err != nil || !ok {
+			cache.LoginFailedCache.Set(username, unsuccessfullLoginCount+1, 5*time.Minute)
 			return c.Status(401).JSON(fiber.Map{"err": "wrong password"})
 		}
+		// Reset failed login count on successful login
+		cache.LoginFailedCache.Delete(username)
 	}
 
 	cache.SessionCache.Set(username, foundAccount, 30*time.Minute)

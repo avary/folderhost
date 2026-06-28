@@ -34,6 +34,11 @@ var DownloadLinkCache *Cache[string, types.DownloadLinkCache] = CreateCache[stri
 	TimeoutCacheEvent: false,
 })
 
+var LoginFailedCache *Cache[string, int] = CreateCache[string, int](1*time.Minute, CacheProperties{
+	SetCacheEvent:     false,
+	TimeoutCacheEvent: false,
+})
+
 func ListenDirectorySetCacheEvents() {
 	msg, _ := json.Marshal(fiber.Map{
 		"type": "directory-update",
