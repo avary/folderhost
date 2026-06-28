@@ -4,7 +4,7 @@
 
 # It will be good to give feedback if you encounter any issues!
 # Report: https://github.com/MertJSX/folderhost/issues
-# Send me an email for security issues: contact@mertjs.dev
+# Send me an email for security issues: contact@mertsami.com
 
 enable_services: false # Don't forget to enable it if you're going to use them.
 services:
