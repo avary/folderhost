@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+
+- **Navigation bar design**: The old one was looking weird and unconfortable for most of users. It was not compatible with devices that has low height. So I think the newer design is looking better now. If you have any other suggestions you can open a discussion for that.
+
+Old: <img width="1280" height="303" alt="image" src="https://github.com/user-attachments/assets/caa428ed-8fa0-4f0e-b1da-5bdf83f8a6ad" />
+New: <img width="1280" height="303" alt="image" src="https://github.com/user-attachments/assets/936d999a-4ddf-40a2-9040-8080672c3a80" />
+
+
+## [v26.6.1] - 2026-06-25
+
 ### Fixed
 
 - **Upload system**: Fixed issue where upload system didn't work properly. It was throwing "invalid json in request body" error for no reason.
