@@ -5,6 +5,7 @@
 database.db
 services.yml
 /debug
+/certs
 
 # Logs
 web/logs
