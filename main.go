@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"embed"
 	"fmt"
 	"io/fs"
@@ -29,6 +30,8 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
+	"golang.org/x/crypto/acme"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 //go:embed web/dist/*
@@ -246,6 +249,12 @@ func main() {
 	errorText := color.New(color.FgRed)
 	warningText := color.New(color.FgYellow)
 	cyanText := color.New(color.FgCyan)
+
+	protocol := "http"
+	if config.SSL.Enabled {
+		protocol = "https"
+	}
+
 	// defaultText.Printf("\nThe server has started on port %d!\n", portInt)
 	defaultText.Print("\nVersion: ")
 	greenText.Printf("%s ", Version)
@@ -256,7 +265,7 @@ func main() {
 	defaultText.Print("\nGitHub: ")
 	cyanText.Printf("https://github.com/MertJSX/folderhost")
 	defaultText.Print("\nLocal URL: ")
-	warningText.Printf("http://127.0.0.1:%d\n", portInt)
+	warningText.Printf("%s://127.0.0.1:%d\n", protocol, portInt)
 
 	_, size, err := utils.GetDirectorySize(config.Folder)
 	if err != nil {
@@ -274,7 +283,7 @@ func main() {
 	if len(localIPs) > 0 {
 		defaultText.Print("Share with other devices on same network:\n")
 		for _, ip := range localIPs {
-			cyanText.Printf("   http://%s:%d\n", ip, portInt)
+			cyanText.Printf("   %s://%s:%d\n", protocol, ip, portInt)
 		}
 	} else {
 		fmt.Printf("\n")
@@ -288,7 +297,52 @@ func main() {
 
 	utils.StartVersionChecker(Version)
 
-	if err := app.Listen("0.0.0.0" + PORT); err != nil {
-		log.Fatalf("Server error: %v", err)
+	if config.SSL.Enabled {
+		if config.SSL.Type == "letsencrypt" {
+			m := &autocert.Manager{
+				Prompt:     autocert.AcceptTOS,
+				HostPolicy: autocert.HostWhitelist(config.SSL.Domains...),
+				Cache:      autocert.DirCache("./certs"),
+				Email:      config.SSL.Email,
+			}
+
+			tlsConfig := &tls.Config{
+				GetCertificate: m.GetCertificate,
+				NextProtos:     []string{"h2", "http/1.1", acme.ALPNProto},
+			}
+
+			ln, err := tls.Listen("tcp", "0.0.0.0"+PORT, tlsConfig)
+			if err != nil {
+				log.Fatalf("SSL Listen error: %v", err)
+			}
+
+			log.Printf("Server is starting with Let's Encrypt SSL on port %d...\n", portInt)
+			if err := app.Listener(ln); err != nil {
+				log.Fatalf("Server error: %v", err)
+			}
+		} else if config.SSL.Type == "self_signed" {
+			certFile := "./certs/self-signed.crt"
+			keyFile := "./certs/self-signed.key"
+
+			os.MkdirAll("./certs", 0755)
+			if _, err := os.Stat(certFile); os.IsNotExist(err) {
+				log.Println("Generating self-signed certificate...")
+				err := utils.GenerateSelfSignedCert(certFile, keyFile)
+				if err != nil {
+					log.Fatalf("Failed to generate self-signed certificate: %v", err)
+				}
+			}
+
+			log.Printf("Server is starting with SSL on port %d...\n", portInt)
+			if err := app.ListenTLS("0.0.0.0"+PORT, certFile, keyFile); err != nil {
+				log.Fatalf("Server error: %v", err)
+			}
+		} else {
+			log.Fatalf("Unknown SSL type in config.yml: %s", config.SSL.Type)
+		}
+	} else {
+		if err := app.Listen("0.0.0.0" + PORT); err != nil {
+			log.Fatalf("Server error: %v", err)
+		}
 	}
 }

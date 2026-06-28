@@ -58,3 +58,19 @@ log_activities: true
 
 # Clears logs automatically after some days. If you want to disable it set the value to 0.
 clear_logs_after: 7 # Days
+
+# -------------------------------------------------------------
+# SSL / HTTPS Configuration
+# -------------------------------------------------------------
+ssl:
+  enabled: false
+
+  # Mode determines how the SSL certificate is generated:
+  # "self_signed" -> (Recommended for local networks) Automatically generates a certificate. No domain required.
+  # "letsencrypt" -> (For public websites) Gets a free, valid certificate. Requires a real domain and open port 80/443.
+  type: "self_signed"
+
+  # Let's Encrypt Settings (Only required if type is "letsencrypt")
+  domains:
+    - example.com
+  email: "admin@example.com"

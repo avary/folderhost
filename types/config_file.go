@@ -1,5 +1,12 @@
 package types
 
+type SSLConfig struct {
+	Enabled bool     `yaml:"enabled"`
+	Type    string   `yaml:"type"`
+	Domains []string `yaml:"domains"`
+	Email   string   `yaml:"email"`
+}
+
 type ConfigFile struct {
 	Port            int    `yaml:"port"`
 	Folder          string `yaml:"folder"`
@@ -14,6 +21,7 @@ type ConfigFile struct {
 	BinStorageLimit string  `yaml:"bin_storage_limit"`
 	LogActivities   bool    `yaml:"log_activities"`
 	ClearLogsAfter  int     `yaml:"clear_logs_after"`
+	SSL             SSLConfig `yaml:"ssl"`
 }
 
 func (c *ConfigFile) GetScopedFolder(scope string) string {
