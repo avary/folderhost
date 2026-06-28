@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
@@ -12,6 +12,7 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const navigate = useNavigate();
+    const errTimeout = useRef<number | null>(null);
 
     async function verifyPassword(e: React.FormEvent) {
         e.preventDefault();
@@ -58,7 +59,8 @@ const Login = () => {
                 setErr("Cannot connect to the server!");
             }
             setPassword("");
-            setTimeout(() => setErr(""), 5000);
+            clearTimeout(errTimeout.current!)
+            errTimeout.current = setTimeout(() => setErr(""), 5000);
         } finally {
             Cookies.remove("username")
             setIsLoading(false);
