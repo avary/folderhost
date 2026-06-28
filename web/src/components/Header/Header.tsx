@@ -1,14 +1,14 @@
 import Cookies from 'js-cookie';
-import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { MdExplore, MdMiscellaneousServices } from "react-icons/md";
-import { FaUserFriends, FaPencilAlt, FaUser, FaBars, FaTimes } from "react-icons/fa"
+import { FaUserFriends, FaPencilAlt, FaBars, FaTimes } from "react-icons/fa"
 import { FaArrowRotateLeft } from "react-icons/fa6"
 import { useCallback, useLayoutEffect, useState } from 'react';
 import axiosInstance from '../../utils/axiosInstance';
+import UserMenu from './UserMenu';
 import fullLogo from '../../assets/folderhost-logo.webp'
 
 const Header = () => {
-    let navigate = useNavigate();
     let location = useLocation();
     const [username, setUsername] = useState<string>(Cookies.get("username") as string);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -43,7 +43,7 @@ const Header = () => {
         const baseClasses = 'text-base flex items-center gap-2 px-5 py-3 transition-all border-b-2';
         const activeClasses = 'text-sky-400 border-sky-500';
         const inactiveClasses = 'text-white border-transparent hover:bg-slate-700 hover:text-sky-400 hover:border-sky-500';
-        
+
         return `${baseClasses} ${isActiveLink(path) ? activeClasses : inactiveClasses}`;
     }
 
@@ -52,36 +52,52 @@ const Header = () => {
     }
 
     return (
-        <div className='flex flex-col items-center justify-center bg-slate-800 sticky left-0 right-0 top-0 w-full border-b-2 border-slate-700 shadow-lg z-50'>
+        <div className='flex flex-col items-center justify-center bg-slate-800 pt-3 sticky left-0 right-0 top-0 w-full border-b-2 border-slate-700 shadow-lg z-50'>
             {/* Desktop Header */}
-            <section className='hidden md:flex flex-row items-center justify-between w-full px-6 py-2'>
+            <section className='hidden md:flex flex-row items-center justify-between w-full px-6'>
                 {/* Logo Section */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 mb-3">
                     <img src={fullLogo} width={200} alt='' />
                 </div>
 
-                {/* User Info Section */}
-                <div className="flex items-center gap-3 px-4 py-3 rounded-lg">
-                    <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-sky-500 rounded-full">
-                            <FaUser className="w-3.5 h-3.5 text-sky-400" />
-                        </div>
-                        <span className="text-white font-medium">{username}</span>
-                    </div>
-                </div>
+                {/* Desktop Navigation */}
+                <nav className='hidden md:flex flex-row justify-center items-center gap-1 h-full'>
+                    <Link
+                        className={getNavLinkClass('/explorer')}
+                        to={"/explorer/.%2F"}>
+                        <MdExplore className="w-5 h-5" />
+                        Explorer
+                    </Link>
+                    <Link
+                        className={getNavLinkClass('/services')}
+                        to={"/services"}>
+                        <MdMiscellaneousServices className="w-5 h-5" />
+                        Services
+                    </Link>
+                    <Link
+                        className={getNavLinkClass('/recovery')}
+                        to={"/recovery"}>
+                        <FaArrowRotateLeft className="w-4 h-4" />
+                        Recovery
+                    </Link>
+                    <Link
+                        className={getNavLinkClass('/users')}
+                        to={"/users"}>
+                        <FaUserFriends className="w-5 h-5" />
+                        Users
+                    </Link>
+                    <Link
+                        className={getNavLinkClass('/logs')}
+                        to={"/logs"}>
+                        <FaPencilAlt className="w-4 h-4" />
+                        Logs
+                    </Link>
+                </nav>
 
-                {/* Logout Button */}
-                <button
-                    className='bg-slate-700 px-5 py-2 rounded-lg border border-slate-600 hover:border-sky-500 hover:bg-slate-600 active:bg-slate-700 font-semibold transition-all text-white'
-                    onClick={() => {
-                        axiosInstance.put("/logout").then(() => {
-                            Cookies.remove("token");
-                            navigate("/login");
-                        })
-                    }}
-                >
-                    Logout
-                </button>
+                {/* User Info and Logout Section */}
+                <div className="flex items-center gap-4">
+                    <UserMenu username={username} />
+                </div>
             </section>
 
             {/* Mobile Header */}
@@ -94,31 +110,11 @@ const Header = () => {
                 {/* User Info and Logout */}
                 <div className="flex items-center justify-between w-full">
                     {/* User Info */}
-                    <div className="flex items-center gap-3 px-4 py-2 rounded-lg">
-                        <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-sky-500 rounded-full">
-                                <FaUser className="w-3.5 h-3.5 text-sky-400" />
-                            </div>
-                            <span className="text-white font-medium">{username}</span>
-                        </div>
-                    </div>
+                    <UserMenu username={username} />
 
-                    {/* Logout Button and Mobile Menu Button */}
+                    {/* Mobile Menu Button */}
                     <div className="flex items-center gap-2">
                         <button
-                            className='bg-slate-700 px-4 py-2 rounded-lg border border-slate-600 hover:border-sky-500 hover:bg-slate-600 active:bg-slate-700 font-semibold transition-all text-white text-sm'
-                            onClick={() => {
-                                axiosInstance.put("/logout").then(() => {
-                                    Cookies.remove("token");
-                                    navigate("/login");
-                                })
-                            }}
-                        >
-                            Logout
-                        </button>
-                        
-                        {/* Mobile Menu Button */}
-                        <button 
                             className="p-2 text-white hover:bg-slate-700 rounded-lg transition-all border border-slate-600"
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
@@ -128,39 +124,7 @@ const Header = () => {
                 </div>
             </section>
 
-            {/* Desktop Navigation */}
-            <nav className='hidden md:flex flex-row justify-center items-center gap-1 w-full border-t border-slate-700/50'>
-                <Link
-                    className={getNavLinkClass('/explorer')}
-                    to={"/explorer/.%2F"}>
-                    <MdExplore className="w-5 h-5" />
-                    Explorer
-                </Link>
-                <Link
-                    className={getNavLinkClass('/services')}
-                    to={"/services"}>
-                    <MdMiscellaneousServices className="w-5 h-5" />
-                    Services
-                </Link>
-                <Link
-                    className={getNavLinkClass('/recovery')}
-                    to={"/recovery"}>
-                    <FaArrowRotateLeft className="w-4 h-4" />
-                    Recovery
-                </Link>
-                <Link
-                    className={getNavLinkClass('/users')}
-                    to={"/users"}>
-                    <FaUserFriends className="w-5 h-5" />
-                    Users
-                </Link>
-                <Link
-                    className={getNavLinkClass('/logs')}
-                    to={"/logs"}>
-                    <FaPencilAlt className="w-4 h-4" />
-                    Logs
-                </Link>
-            </nav>
+            {/* Desktop Navigation moved to top */}
 
             {/* Mobile Navigation Menu */}
             {isMobileMenuOpen && (
