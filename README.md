@@ -31,7 +31,7 @@ src="https://img.shields.io/docker/pulls/mertjsx/folderhost">
 
 ## Overview
 
-FolderHost is a self-hosted cloud platform that allows you to store, share, and collaborate on files with other users. It is built with Go backend and React frontend, and is designed to be lightweight and easy to use. FolderHost is a great alternative to Nextcloud for users who want a simple and efficient file sharing solution. It has many features such as file management, user management, real-time collaboration, recovery bin, logs and more. Currently it's not made to be used for mobile devices, but I will try to make it mobile friendly in the future. You can check all the features from below.
+FolderHost is a self-hosted cloud platform that allows you to store, manage, share and collaborate on files with other users. It is built with Go backend and React frontend, and is designed to be lightweight and easy to use. FolderHost is a great alternative to Nextcloud for users who want a simple and efficient file sharing solution. It has many features such as file management, user management, real-time collaboration, recovery bin, logs and more. Currently it's not made to be used for mobile devices, but I will try to make it mobile friendly in the future. You can check all the features from below.
 
 ---
 
