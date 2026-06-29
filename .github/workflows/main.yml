@@ -57,55 +57,55 @@ jobs:
           
           if [ -z "$LATEST_TAG" ]; then
             VERSION="v${CURRENT_YEAR}.${CURRENT_MONTH}.0"
-            echo "🆕 No existing tags for this month, starting with: $VERSION"
+            echo "No existing tags for this month, starting with: $VERSION"
           else
             LAST_PATCH=$(echo $LATEST_TAG | awk -F. '{print $3}')
             NEW_PATCH=$((LAST_PATCH + 1))
             VERSION="v${CURRENT_YEAR}.${CURRENT_MONTH}.${NEW_PATCH}"
-            echo "⬆️ Incrementing from $LATEST_TAG to $VERSION"
+            echo "Incrementing from $LATEST_TAG to $VERSION"
           fi
         
         elif [[ "${{ github.event.inputs.release_type }}" == "major" ]]; then
           EXISTING_TAG=$(git tag -l "v${CURRENT_YEAR}.${CURRENT_MONTH}.0")
           if [ -n "$EXISTING_TAG" ]; then
-            echo "⚠️ Warning: v${CURRENT_YEAR}.${CURRENT_MONTH}.0 already exists!"
+            echo "Warning: v${CURRENT_YEAR}.${CURRENT_MONTH}.0 already exists!"
           fi
           VERSION="v${CURRENT_YEAR}.${CURRENT_MONTH}.0"
-          echo "🎯 Creating new major version: $VERSION"
+          echo "Creating new major version: $VERSION"
         
         elif [[ "${{ github.event.inputs.release_type }}" == "minor" ]]; then
           LATEST_TAG=$(git tag -l "v${CURRENT_YEAR}.${CURRENT_MONTH}.*" --sort=-v:refname | head -n 1)
           
           if [ -z "$LATEST_TAG" ]; then
             VERSION="v${CURRENT_YEAR}.${CURRENT_MONTH}.0"
-            echo "🆕 No existing tags for this month, starting with: $VERSION"
+            echo "No existing tags for this month, starting with: $VERSION"
           else
             LAST_PATCH=$(echo $LATEST_TAG | awk -F. '{print $3}')
             NEW_PATCH=$((LAST_PATCH + 1))
             VERSION="v${CURRENT_YEAR}.${CURRENT_MONTH}.${NEW_PATCH}"
-            echo "⬆️ Incrementing from $LATEST_TAG to $VERSION"
+            echo "Incrementing from $LATEST_TAG to $VERSION"
           fi
         fi
 
         if git rev-parse "$VERSION" >/dev/null 2>&1; then
-          echo "❌ Error: Tag $VERSION already exists!"
+          echo "Error: Tag $VERSION already exists!"
           exit 1
         fi
 
         echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "✅ Final version: $VERSION"
+        echo "Final version: $VERSION"
 
     - name: Extract release notes from CHANGELOG.md
       id: changelog
       run: |
         if [[ -n "${{ github.event.inputs.release_notes_override }}" ]]; then
-          echo "📝 Using manually provided release notes"
+          echo "Using manually provided release notes"
           NOTES="${{ github.event.inputs.release_notes_override }}"
         elif [[ ! -f "CHANGELOG.md" ]]; then
-          echo "⚠️ CHANGELOG.md not found, using default notes"
+          echo "CHANGELOG.md not found, using default notes"
           NOTES="No changelog available."
         else
-          echo "📖 Reading release notes from CHANGELOG.md [Unreleased] section"
+          echo "Reading release notes from CHANGELOG.md [Unreleased] section"
 
           NOTES=$(awk '
             /^## \[Unreleased\]/ { found=1; next }
@@ -114,10 +114,10 @@ jobs:
           ' CHANGELOG.md | sed '/^[[:space:]]*$/{ /./!d }' | sed '1{/^$/d}')
 
           if [[ -z "$NOTES" ]]; then
-            echo "⚠️ [Unreleased] section is empty, using default notes"
+            echo "[Unreleased] section is empty, using default notes"
             NOTES="No unreleased changes documented."
           else
-            echo "✅ Successfully extracted changelog notes"
+            echo "Successfully extracted changelog notes"
           fi
         fi
 
@@ -165,55 +165,55 @@ jobs:
         chmod +x ./folderhost-linux-amd64
         tar -czf ./release_packages/folderhost-linux-amd64.tar.gz ./folderhost-linux-amd64
         rm ./folderhost-linux-amd64
-        echo "✅ Linux x86_64 package created"
+        echo "Linux x86_64 package created"
 
         # Linux ARM32 (.tar.gz)
         cp ./debug/folderhost-linux-arm ./folderhost-linux-armv7
         chmod +x ./folderhost-linux-armv7
         tar -czf ./release_packages/folderhost-linux-armv7.tar.gz ./folderhost-linux-armv7
         rm ./folderhost-linux-armv7
-        echo "✅ Linux ARM32 package created"
+        echo "Linux ARM32 package created"
 
         # Linux ARM64 (.tar.gz)
         cp ./debug/folderhost-linux-arm64 ./folderhost-linux-arm64
         chmod +x ./folderhost-linux-arm64
         tar -czf ./release_packages/folderhost-linux-arm64.tar.gz ./folderhost-linux-arm64
         rm ./folderhost-linux-arm64
-        echo "✅ Linux ARM64 package created"
+        echo "Linux ARM64 package created"
 
         # Windows (.zip - sadece Windows)
         cp ./debug/folderhost.exe ./folderhost-windows-amd64.exe
         zip -j ./release_packages/folderhost-windows-amd64.zip ./folderhost-windows-amd64.exe
         rm ./folderhost-windows-amd64.exe
-        echo "✅ Windows package created"
+        echo "Windows package created"
 
         # macOS Intel (.tar.gz)
         cp ./debug/folderhost-mac-amd64 ./folderhost-macos-intel
         chmod +x ./folderhost-macos-intel
         tar -czf ./release_packages/folderhost-macos-intel.tar.gz ./folderhost-macos-intel
         rm ./folderhost-macos-intel
-        echo "✅ macOS Intel package created"
+        echo "macOS Intel package created"
 
         # macOS ARM (.tar.gz)
         cp ./debug/folderhost-mac-arm64 ./folderhost-macos-applesilicon
         chmod +x ./folderhost-macos-applesilicon
         tar -czf ./release_packages/folderhost-macos-applesilicon.tar.gz ./folderhost-macos-applesilicon
         rm ./folderhost-macos-applesilicon
-        echo "✅ macOS Apple Silicon package created"
+        echo "macOS Apple Silicon package created"
 
         # FreeBSD (.tar.gz)
         cp ./debug/folderhost-freebsd ./folderhost-freebsd-amd64
         chmod +x ./folderhost-freebsd-amd64
         tar -czf ./release_packages/folderhost-freebsd-amd64.tar.gz ./folderhost-freebsd-amd64
         rm ./folderhost-freebsd-amd64
-        echo "✅ FreeBSD package created"
+        echo "FreeBSD package created"
 
     - name: Verify packages
       run: |
-        echo "📦 Release packages:"
+        echo "Release packages:"
         ls -lh ./release_packages/
         echo ""
-        echo "📊 Package sizes:"
+        echo "Package sizes:"
         du -h ./release_packages/*
 
     - name: Upload artifacts
@@ -262,9 +262,9 @@ jobs:
 
     - name: Docker image info
       run: |
-        echo "🐋 Docker image pushed successfully!"
-        echo "📍 Image: ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:${{ needs.build-and-release.outputs.version }}"
-        echo "📍 Latest: ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:latest"
+        echo "Docker image pushed successfully!"
+        echo "Image: ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:${{ needs.build-and-release.outputs.version }}"
+        echo "Latest: ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:latest"
 
   create-release:
     runs-on: ubuntu-latest
@@ -290,10 +290,10 @@ jobs:
           
           Release Date: ${{ needs.build-and-release.outputs.current_date }}
           
-          ## 📋 What's New
+          ## What's New
           ${{ needs.build-and-release.outputs.release_notes }}
           
-          ## 📦 Downloads
+          ## Downloads
           
           | Platform | Architecture | Format | Download |
           |----------|--------------|--------|----------|
@@ -306,7 +306,7 @@ jobs:
           | FreeBSD | x86_64 | tar.gz | [folderhost-freebsd-amd64.tar.gz](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/folderhost-freebsd-amd64.tar.gz) |
           | Docker | Multi-arch | image | `docker pull ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:${{ needs.build-and-release.outputs.version }}` |
           
-          ## 🐋 Docker Usage
+          ## Docker Usage
           
           ```bash
           # Pull the image
@@ -322,7 +322,7 @@ jobs:
           
           **Important:** The application will use port 5000 by default, but you can change this in `config.yml` and update the port mapping in `docker-compose.prod.yml` accordingly.
           
-          ## 🔧 Quick Start
+          ## Quick Start
           
           ### Linux (x86_64)
           ```bash
@@ -353,7 +353,7 @@ jobs:
             mertjsx/folderhost:${{ needs.build-and-release.outputs.version }}
           ```
           
-          ## ⚙️ Manual Configuration
+          ## Manual Configuration
           
           1. Extract the downloaded archive (for binary installations)
           2. Run the application once to generate `config.yml`
@@ -363,7 +363,7 @@ jobs:
           
           ---
           
-          💡 For issues and questions, please visit the [GitHub Issues](https://github.com/${{ github.repository }}/issues) page.
+          For issues and questions, please visit the [GitHub Issues](https://github.com/${{ github.repository }}/issues) page.
         files: |
           ./release_packages/folderhost-linux-amd64.tar.gz
           ./release_packages/folderhost-linux-armv7.tar.gz
@@ -380,6 +380,6 @@ jobs:
 
     - name: Release summary
       run: |
-        echo "🎉 Release ${{ needs.build-and-release.outputs.version }} created successfully!"
-        echo "📍 URL: https://github.com/${{ github.repository }}/releases/tag/${{ needs.build-and-release.outputs.version }}"
-        echo "🐋 Docker: ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:${{ needs.build-and-release.outputs.version }}"
+        echo "Release ${{ needs.build-and-release.outputs.version }} created successfully!"
+        echo "URL: https://github.com/${{ github.repository }}/releases/tag/${{ needs.build-and-release.outputs.version }}"
+        echo "Docker: ${{ secrets.DOCKERHUB_USERNAME }}/folderhost:${{ needs.build-and-release.outputs.version }}"
