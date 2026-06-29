@@ -14,6 +14,7 @@ New: <img width="1280" height="303" alt="image" src="https://github.com/user-att
 ### Security
 
 - **Login system**: Limit max failed login attempts to 5 (Username will be blocked for 5 minutes after 5 failed login attempts).
+- **SSL**: Added SSL configuration to the default configuration file. You can enable it by setting `ssl.enabled` to `true` in the configuration file. There are 2 possible ways to use it. The first one is to use a self signed certificate. The second one is to use a let's encrypt certificate. If you don't have a domain or you don't want to use let's encrypt certificate just use the self signed certificate.
 
 ## [v26.6.1] - 2026-06-25
 
