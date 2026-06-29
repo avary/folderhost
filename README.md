@@ -23,13 +23,21 @@ src="https://img.shields.io/docker/pulls/mertjsx/folderhost">
 </p>
 
 
-> 🚀 **No Dependencies Required!**
+> **No Dependencies Required!**
 
-> ⚡ **Lightweight:** Windows / Linux **~19MB**
+> **Lightweight:** Windows / Linux **~19MB**
 
 ---
 
-## 🖥️ Screenshots
+## Overview
+
+FolderHost is a self-hosted cloud platform that allows you to store, share, and collaborate on files with other users. It is built with Go backend and React frontend, and is designed to be lightweight and easy to use. FolderHost is a great alternative to Nextcloud for users who want a simple and efficient file sharing solution. It has many features such as file management, user management, real-time collaboration, recovery bin, logs and more. Currently it's not made to be used for mobile devices, but I will try to make it mobile friendly in the future. You can check all the features from below.
+
+---
+
+## Screenshots
+
+Here you can view some screenshots of the web client:
 
 <img width="700px" alt="image" src="https://github.com/user-attachments/assets/cc85a58c-3a25-4341-86d8-7dfac9bca41d" />
 
@@ -45,9 +53,9 @@ src="https://img.shields.io/docker/pulls/mertjsx/folderhost">
 
 ---
 
-## 📦 Download & Run (Recommended)
+## Installation
 
-> **Beta Notice:** FolderHost is currently in **beta**. Some features may be incomplete or subject to change.
+There are 2 possible ways to run FolderHost. The first one is using Docker, and the second one is by downloading the binary for your operating system. If you want a more secure and more popular way to run FolderHost, I'd suggest you to use Docker. But if you don't want to use Docker, just download the binary for your OS and run it. There are no dependencies to run the binary. Lots of people use docker, but for me the better way is using the binary. Because there are no dependencies and it's lightweight. But, it's up to you. You can check the instructions below.
 
 <br>
 
@@ -64,18 +72,31 @@ src="https://img.shields.io/docker/pulls/mertjsx/folderhost">
     mertjsx/folderhost:latest
 ```
 
-### Windows
+### Binary Installation
+
+First of all you need to create a folder to store your files and the binary. Then you can run the binary. Otherwise it's going to create a lot of files in your current directory. This is just for the ones that don't want to use docker.
+
+#### Windows
+
+Go to the releases install the latest windows version then run the binary inside that folder.
+
 ```powershell
 # Download the .exe, then:
-folderhost.exe
+folderhost.exe # or just double click it.
 ```
 
-### Linux
-> Just copy and paste this and folderhost will start working. It's around 19 mb for linux.
+#### Linux
+
+> Don't forget to create a folder for the binary, and run the binary in that folder.
+
+Just copy and paste this and folderhost will start working. It's around 19 mb for linux.
+
+
 ```bash
 wget https://github.com/MertJSX/folderhost/releases/latest/download/folderhost-linux-amd64.tar.gz
 tar -xzf folderhost-linux-amd64.tar.gz
 chmod +x folderhost-linux-amd64
+rm -rf folderhost-linux-amd64.tar.gz
 
 # Run
 ./folderhost-linux-amd64
@@ -83,7 +104,13 @@ chmod +x folderhost-linux-amd64
 
 ---
 
-## 📊 Why FolderHost?
+## Documentation
+
+There is a simple documentation page that explains how to use FolderHost. You can access it from the website of the [FolderHost](https://folderhost.org). The program itself is so simple. There is basically nothing to explain. The configuration file has it's own comments describing what each field does. If you have any additional questions, you can open an issue or discussion on GitHub. I usually reply in a few hours but it might take a day or two depending on my schedule.
+
+---
+
+## Why FolderHost?
 **Lightweight alternative to Nextcloud** - Get the same file sharing features without the complexity.
 
 | Feature | FolderHost | Nextcloud |
@@ -97,7 +124,7 @@ chmod +x folderhost-linux-amd64
 
 ---
 
-## ✨ Features
+## Features
 
 ### Core
 - **Single Binary Deployment** - No dependencies, just run
@@ -109,7 +136,6 @@ chmod +x folderhost-linux-amd64
 - Full file operations (upload, download, move, copy, rename)
 - Chunked file uploads for large files
 - Recovery bin with configurable limits
-- Storage quota management per folder
 
 ### Security & Monitoring
 - JWT-based authentication
@@ -117,15 +143,12 @@ chmod +x folderhost-linux-amd64
 - Audit logs for all activities
 - Configurable storage limits
 
-
 ---
 
-## ⚙️ Configuration
+## Configuration
 > If you encounter any issues or have questions, please feel free to open an [issue](https://github.com/MertJSX/folderhost/issues) or provide feedback. Your input is highly appreciated!
 
-On first run, a `config.yml` file will be created. Edit it to customize:
-
-⚠️ **Important:** Change admin password before starting to use!
+On first run, a `config.yml` file will be created. Edit it to customize, don't forget to change admin password:
 
 <details>
   <summary>Show config</summary>
@@ -201,10 +224,21 @@ Once running, open your browser to:
 http://localhost:5000
 ```
 
-Default credentials: `admin` / `123` (**Change immediately!**)
+Default credentials: `admin` / `123` (**Change them from config.yml file**)
 
 [View All Releases](https://github.com/MertJSX/folderhost/releases) • [Report Issues](https://github.com/MertJSX/folderhost/issues) • [Changelog](https://github.com/MertJSX/folderhost/blob/main/CHANGELOG.md)
 
+---
+
+## Security suggestions
+
+The security setup for a cloud storage like FolderHost is very important. I've added some important security features to defend against attacks. But always add your own security measures too, like Cloudflare, SSL, and etc. You can try to change the default port to make it harder to find the server. For the admin account, change the username and password!
+
+JWT tokens here are very secure. They have only 24 hours validity. But it saves your last login IP, last login user-agent, browser etc. To prevent attackers from stealing your token and logging in as you. That means even if they steal your token, they can't login as you because it will detect that it's not your IP, User-Agent etc. The con of this feature is that if you login from another device, you will be logged out of the previous device. So you can't use one account for different users. I would suggest you to create different accounts for each user, even if they don't have a special folder.
+
+For a 100% security you can make your FolderHost server local and only connect to it using SSH tunnels or VPNs.
+
+---
 
 ## Contributing
 
@@ -214,7 +248,7 @@ Contributions are welcome! Please feel free to submit a Pull Request. You can lo
 
 ## License
 
-[GPL-3.0 License](LICENSE)
+The current license is [GPL-3.0 License](LICENSE). I like open-source things, so I decided to release this project under GPL-3.0 License. It's not gonna be changed. I'm open to new ideas and contributions. 
 
 ---
 
