@@ -12,6 +12,8 @@ import (
 )
 
 func GetConfig() {
+	MigrateConfigIfNeeded()
+
 	fileData, err := os.ReadFile("./config.yml")
 
 	if err != nil {
