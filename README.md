@@ -37,16 +37,16 @@ FolderHost is a self-hosted cloud platform that allows you to store, share, and 
 
 ## Screenshots
 
-Here you can view some screenshots of the web client:
+Here you can view some screenshots of the web client. These are screenshots from my cloud that I'm using to manage my Minecraft server:
 
-<img width="700px" alt="image" src="https://github.com/user-attachments/assets/cc85a58c-3a25-4341-86d8-7dfac9bca41d" />
+<img width="700px" alt="image" src="https://github.com/user-attachments/assets/34ac3c23-5d77-4f15-a771-7983caf53ee1" />
 
 <details>
   <summary>More Screenshots</summary>
-    <img width="700px" alt="image" src="https://github.com/user-attachments/assets/97a3afeb-0f43-488f-b31a-7c616687c988" />
-    <img width="700px" alt="image" src="https://github.com/user-attachments/assets/04286979-6bd9-4c02-92a1-b994242fc576" />
-    <img width="700px" alt="image" src="https://github.com/user-attachments/assets/ca462852-6fae-4ec2-9479-af7f3e3a09a1" />
-    <img width="700px" alt="image" src="https://github.com/user-attachments/assets/9b23c9f4-5bc0-4e61-becd-c3cee71e2150" />
+    <img width="700px" alt="image" src="https://github.com/user-attachments/assets/38d3779c-dc0e-4b7e-9b24-1a952ee4f109" />
+    <img width="700px" alt="image" src="https://github.com/user-attachments/assets/f67cb24e-16b8-438e-a702-abc366d3ceaa" />
+    <img width="700px" alt="image" src="https://github.com/user-attachments/assets/60582167-866a-4011-b277-42bd8fcc6f10" />
+    <img width="700px" alt="image" src="https://github.com/user-attachments/assets/340b89a4-3bd2-44ca-b55d-8be66f9dc0a4" />
 
 </details>
 
@@ -162,8 +162,9 @@ On first run, a `config.yml` file will be created. Edit it to customize, don't f
 # /_/       /_/  /_/  By MertJSX
 #
 # Thanks for using my application!!! Please report if you catch any bugs!
-# Here is the GitHub page of Folderhost: https://github.com/MertJSX/folderhost
-#
+# Here is the GitHub page of FolderHost: https://github.com/MertJSX/folderhost
+# Contact for security vulnerabilities: contact@mertsami.com
+version: "v26.6.2"
 
 # Port is required. Don't delete it!
 port: 5000
@@ -183,7 +184,7 @@ admin:
   username: "admin"
   password: "123"
   email: "example@email.com"
-  scope: "" # for example "/yourfolder", this attribute will set a specific location for user and user can't escape it
+  scope: "" # for example "/yourfolder", this attribute will set a specific location for user and he cannot escape it
   permissions:
     read_directories: true
     read_files: true
@@ -214,6 +215,22 @@ log_activities: true
 
 # Clears logs automatically after some days. If you want to disable it set the value to 0.
 clear_logs_after: 7 # Days
+
+# -------------------------------------------------------------
+# SSL / HTTPS Configuration
+# -------------------------------------------------------------
+ssl:
+  enabled: false
+
+  # Mode determines how the SSL certificate is generated:
+  # "self_signed" -> (Recommended for local networks) Automatically generates a certificate. No domain required.
+  # "letsencrypt" -> (For public websites) Gets a free, valid certificate. Requires a real domain and open port 80/443.
+  type: "self_signed"
+
+  # Let's Encrypt Settings (Only required if type is "letsencrypt")
+  domains:
+    - example.com
+  email: "admin@example.com"
 ```
 </details>
 
