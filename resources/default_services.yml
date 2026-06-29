@@ -2,6 +2,8 @@
 #  FolderHost Services [BETA]  #
 ################################
 
+version: "v26.6.2"
+
 # It will be good to give feedback if you encounter any issues!
 # Report: https://github.com/MertJSX/folderhost/issues
 # Send me an email for security issues: contact@mertsami.com
