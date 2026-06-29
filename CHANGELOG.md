@@ -4,17 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- **Config Migration**: Added automatic config.yml migration system.
+- **SSL**: Added SSL configuration to the default configuration file. You can enable it by setting `ssl.enabled` to `true` in the configuration file. There are 2 possible ways to use it. The first one is to use a self signed certificate. The second one is to use a let's encrypt certificate. If you don't have a domain or you don't want to use let's encrypt certificate just use the self signed certificate.
+
 ### Changed
 
 - **Navigation bar design**: The old one was looking weird and unconfortable for most of users. It was not compatible with devices that has low height. So I think the newer design is looking better now. If you have any other suggestions you can open a discussion for that.
 
-Old: <img width="1280" height="303" alt="image" src="https://github.com/user-attachments/assets/caa428ed-8fa0-4f0e-b1da-5bdf83f8a6ad" />
-New: <img width="1280" height="303" alt="image" src="https://github.com/user-attachments/assets/936d999a-4ddf-40a2-9040-8080672c3a80" />
+  - Old: <img width="1280" height="303" alt="image" src="https://github.com/user-attachments/assets/caa428ed-8fa0-4f0e-b1da-5bdf83f8a6ad" />
+  - New: <img width="1280" height="303" alt="image" src="https://github.com/user-attachments/assets/936d999a-4ddf-40a2-9040-8080672c3a80" />
 
 ### Security
 
 - **Login system**: Limit max failed login attempts to 5 (Username will be blocked for 5 minutes after 5 failed login attempts).
-- **SSL**: Added SSL configuration to the default configuration file. You can enable it by setting `ssl.enabled` to `true` in the configuration file. There are 2 possible ways to use it. The first one is to use a self signed certificate. The second one is to use a let's encrypt certificate. If you don't have a domain or you don't want to use let's encrypt certificate just use the self signed certificate.
 
 ## [v26.6.1] - 2026-06-25
 
